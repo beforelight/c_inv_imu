@@ -5,6 +5,7 @@
 #ifndef C_INV_IMU_INV_IMU_H
 #define C_INV_IMU_INV_IMU_H
 #include <stdint.h>
+#include <float.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,9 +32,6 @@
 #define INV_DEBUG(...)
 #endif //INV_NO_DEBUG
 
-
-#define virtual
-#define override
 
 typedef enum __inv_i2c_direction {
     inv_i2c_direction_Write = 0U, /*!< Master transmit. */
@@ -136,8 +134,8 @@ typedef struct __inv_imu_vector_table {
 
 typedef struct __inv_imu {
     inv_imu_vector_table *vtable;
-    inv_i2c *i2c;
-    inv_spi *spi;
+    inv_i2c i2c;
+    inv_spi spi;
     inv_i2c_transfer i2cTransfer;
     inv_spi_transfer spiTransfer;
     bool addrAutoDetect;
@@ -146,31 +144,72 @@ typedef struct __inv_imu {
 } inv_imu, *inv_imu_handle;
 
 
+inline int IMU_Init(inv_imu_handle this, inv_imu_config _cfg) { return this->vtable->Init(this, _cfg); }
+inline bool IMU_Detect(inv_imu_handle this) { return this->vtable->Detect(this); }
+inline int IMU_SelfTest(inv_imu_handle this) { return this->vtable->SelfTest(this); }
+inline const char *IMU_Report(inv_imu_handle this) { return this->vtable->Report(this); }
+inline bool IMU_DataReady(inv_imu_handle this) { return this->vtable->DataReady(this); }
+inline int IMU_EnableDataReadyInt(inv_imu_handle this) { return this->vtable->EnableDataReadyInt(this); }
+inline int IMU_SoftReset(inv_imu_handle this) { return this->vtable->SoftReset(this); }
+inline int IMU_ReadSensorBlocking(inv_imu_handle this) { return this->vtable->ReadSensorBlocking(this); }
+inline int IMU_ReadSensorNonBlocking(inv_imu_handle this) { return this->vtable->ReadSensorNonBlocking(this); }
+//顺序是 accel(xyz) gyro(xyz) mag(xyz)
+inline int IMU_Convert(inv_imu_handle this, float array[9]) { return this->vtable->Convert(this, array); };
+inline int IMU_Convert2(inv_imu_handle this, int16_t raw[9]) { return this->vtable->Convert2(this, raw); }
+inline int IMU_Convert3(inv_imu_handle this, float *temp) { return this->vtable->Convert3(this, temp); }
+inline bool IMU_IsOpen(inv_imu_handle this) { return this->vtable->IsOpen(this); }
+
+
 #define  SlaveAddressAutoDetect 0
 void IMU_Destruct(inv_imu_handle this) { free(this); }
-inv_imu_handle IMU_Construct() {
-    inv_imu_handle rtv = malloc(sizeof(inv_imu));
-    memset(rtv, 0, sizeof(inv_imu));
-    return rtv;
-}
-virtual int IMU_Init(inv_imu_handle this, inv_imu_config _cfg) { return this->vtable->Init(this, _cfg); }
-virtual bool IMU_Detect(inv_imu_handle this) { return this->vtable->Detect(this); }
-virtual int IMU_SelfTest(inv_imu_handle this) { return this->vtable->SelfTest(this); }
-virtual const char *IMU_Report(inv_imu_handle this) { return this->vtable->Report(this); }
-virtual bool IMU_DataReady(inv_imu_handle this) { return this->vtable->DataReady(this); }
-virtual int IMU_EnableDataReadyInt(inv_imu_handle this) { return this->vtable->EnableDataReadyInt(this); }
-virtual int IMU_SoftReset(inv_imu_handle this) { return this->vtable->SoftReset(this); }
-virtual int IMU_ReadSensorBlocking(inv_imu_handle this) { return this->vtable->ReadSensorBlocking(this); }
-virtual int IMU_ReadSensorNonBlocking(inv_imu_handle this) { return this->vtable->ReadSensorNonBlocking(this); }
-virtual int IMU_Convert(inv_imu_handle this, float array[9]) { return this->vtable->Convert(this, array); };
-virtual int IMU_Convert2(inv_imu_handle this, int16_t raw[9]) { return this->vtable->Convert2(this, raw); }
-virtual int IMU_Convert3(inv_imu_handle this, float *temp) { return this->vtable->Convert3(this, temp); }
-virtual bool IMU_IsOpen(inv_imu_handle this) { return this->vtable->IsOpen(this); }
+inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr);
+inv_imu_handle IMU_Construct2(inv_spi _spi);
+int IMU_WriteReg(inv_imu_handle this, uint8_t reg, uint8_t val);
+int IMU_WriteRegVerified(inv_imu_handle this, uint8_t reg, uint8_t val);
+int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val);
+int IMU_ModifyReg(inv_imu_handle this, uint8_t reg, uint8_t val, uint8_t mask);
+bool _IMU_IsOpen(inv_imu_handle this) { return this->isOpen; }
 
 
-int IMU_WriteReg(inv_imu_handle this,uint8_t reg, uint8_t val);
-int IMU_WriteRegVerified(inv_imu_handle this,uint8_t reg, uint8_t val);
-int IMU_ReadReg(inv_imu_handle this,uint8_t reg, uint8_t *val);
-int IMU_ModifyReg(inv_imu_handle this,uint8_t reg, uint8_t val, uint8_t mask);
+struct _inv_weak_map_int {
+    const float *key;
+    const int *val;
+    int n;
+};
+
+struct _inv_weak_map_float {
+    const float *key;
+    const float *val;
+    int n;
+};
+
+#define _InvGetMapVal(map, _key, the_val) { \
+int n = 0;\
+float distance = FLT_MAX;\
+float buf;\
+for (int i = 0; i < map.n; ++i) {\
+buf = map.key[i] - _key;\
+buf *= buf;\
+if (buf < distance) {\
+distance = buf;\
+n = i;\
+}\
+}  the_val = map.val[n];}
+
+
+extern const struct _inv_weak_map_int mpu_accel_fs_map;
+extern const struct _inv_weak_map_int mpu_gyro_fs_map;
+extern const struct _inv_weak_map_float mpu_accel_unit_G_map;
+extern const struct _inv_weak_map_float mpu_gyro_unit_dps_map;
+extern const struct _inv_weak_map_float mpu_accel_unit_from_G_map;
+extern const struct _inv_weak_map_float mpu_gyro_unit_from_dps_map;
+extern const struct _inv_weak_map_int MPU9250_GBW_MAP;
+extern const struct _inv_weak_map_int MPU9250_ABW_MAP;
+extern const struct _inv_weak_map_int ICM20948_GBW_MAP;
+
+#define MPU6050_GBW_MAP   MPU9250_GBW_MAP
+#define ICM20602_GBW_MAP  MPU9250_GBW_MAP
+#define ICM20602_ABW_MAP  MPU9250_ABW_MAP
+#define ICM20948_ABW_MAP  MPU9250_ABW_MAP
 
 #endif //C_INV_IMU_INV_IMU_H
