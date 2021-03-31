@@ -3,7 +3,7 @@ extern "C"{
 #endif
 
 #include "inv_mpu9250.h"
-
+#if INV_MPU9250_ENABLE
 
 const int DEF_ST_PRECISION = 1000;
 const int DEF_GYRO_CT_SHIFT_DELTA = 500;
@@ -87,14 +87,14 @@ inv_imu_vector_table mpu9250_VectorTable =
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint16_t _addr) {
-    inv_mpu9250_handle rtv = (void *) realloc(IMU_Construct(_i2c, _addr), sizeof(inv_mpu9250));
+    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
 inv_mpu9250_handle MPU9250_Construct2(inv_spi _spi) {
-    inv_mpu9250_handle rtv = (void *) realloc(IMU_Construct2(_spi), sizeof(inv_mpu9250));
+    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_Construct2(_spi), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -578,7 +578,7 @@ int MPU9250_SubI2cWrite(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, cons
     }
     return res;
 }
-
+#endif //INV_XXX_ENABLE
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

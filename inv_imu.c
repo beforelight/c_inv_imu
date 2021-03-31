@@ -5,7 +5,7 @@ extern "C"{
 #include "inv_imu.h"
 
 inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
-    inv_imu_handle rtv = malloc(sizeof(inv_imu));
+    inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
     rtv->i2c = _i2c;
     rtv->i2cTransfer.slaveAddress = _addr;
@@ -17,7 +17,7 @@ inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
     return rtv;
 }
 inv_imu_handle IMU_Construct2(inv_spi _spi) {
-    inv_imu_handle rtv = malloc(sizeof(inv_imu));
+    inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
     rtv->spi = _spi;
     return rtv;

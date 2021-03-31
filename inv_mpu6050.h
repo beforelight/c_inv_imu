@@ -5,6 +5,7 @@ extern "C"{
 #ifndef INV_IMU_INV_MPU6050_H
 #define INV_IMU_INV_MPU6050_H
 #include "inv_imu.h"
+#if INV_MPU6050_ENABLE
 
 typedef struct __inv_mpu6050 {
     inv_imu parents;
@@ -115,6 +116,7 @@ enum MPU6050_RegMap {
     MPU6050_FIFO_R_W = 0x74,             //R/W
     MPU6050_WHO_AM_I = 0x75,             //R
 };
+#endif //INV_XXX_ENABLE
 #endif //INV_IMU_INV_MPU6050_H
 
 

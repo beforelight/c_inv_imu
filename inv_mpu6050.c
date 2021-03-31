@@ -3,6 +3,7 @@ extern "C"{
 #endif
 
 #include "inv_mpu6050.h"
+#if INV_MPU6050_ENABLE
 const uint16_t accelSelfTestEquation[32] = {
         1347, 1393, 1440, 1488, 1538, 1590, 1644, 1699,
         1757, 1816, 1877, 1941, 2006, 2074, 2144, 2216,
@@ -35,7 +36,7 @@ inv_imu_vector_table mpu6050_VectorTable = {
 };
 
 inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint16_t _addr) {
-    inv_mpu6050_handle rtv = (void *) realloc(IMU_Construct(_i2c, _addr), sizeof(inv_mpu6050));
+    inv_mpu6050_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_mpu6050));
     memset((void *) ((char *)rtv + sizeof(inv_mpu6050) - sizeof(inv_imu)), 0, sizeof(inv_mpu6050) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu6050_VectorTable;
     return rtv;
@@ -300,7 +301,7 @@ int MPU6050_Convert3(inv_mpu6050_handle this, float *temp) {
 }
 
 
-
+#endif //INV_XXX_ENABLE
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

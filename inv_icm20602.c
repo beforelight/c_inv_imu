@@ -3,7 +3,7 @@ extern "C"{
 #endif
 
 #include "inv_icm20602.h"
-
+#if INV_ICM20602_ENABLE
 const int DEF_ST_PRECISION = 1000;
 const int DEF_GYRO_CT_SHIFT_DELTA = 500;
 const int DEF_ACCEL_ST_SHIFT_DELTA = 500;
@@ -69,14 +69,14 @@ inv_imu_vector_table icm20602_VectorTable =
 
 
 inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint16_t _addr) {
-    inv_icm20602_handle rtv = (void *) realloc(IMU_Construct(_i2c, _addr), sizeof(inv_icm20602));
+    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_icm20602));
     memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
 inv_icm20602_handle ICM20602_Construct2(inv_spi _spi) {
-    inv_icm20602_handle rtv = (void *) realloc(IMU_Construct2(_spi), sizeof(inv_icm20602));
+    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_Construct2(_spi), sizeof(inv_icm20602));
     memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -422,7 +422,7 @@ int ICM20602_Convert3(inv_icm20602_handle this, float *temp) {
     return 0;
 }
 
-
+#endif //INV_XXX_ENABLE
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

@@ -5,6 +5,7 @@ extern "C"{
 #ifndef INV_IMU_INV_ICM20948_H
 #define INV_IMU_INV_ICM20948_H
 #include "inv_imu.h"
+#if INV_ICM20948_ENABLE
 
 typedef struct __inv_icm20948 {
     inv_imu parents;
@@ -200,9 +201,8 @@ enum AK09916_RegMap {
     AK09916_TS2 = 0x34, //DO NOT ACCESS
 };
 
-
+#endif //INV_XXX_ENABLE
 #endif //INV_IMU_INV_ICM20948_H
-
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

@@ -3,7 +3,7 @@ extern "C"{
 #endif
 
 #include "inv_icm20600.h"
-
+#if INV_ICM20600_ENABLE
 inv_imu_vector_table icm20600_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
@@ -47,7 +47,7 @@ bool ICM20600_Detect(inv_icm20602_handle this) {
     return false;
 }
 
-
+#endif //INV_XXX_ENABLE
 #if defined(__cplusplus) || defined(c_plusplus)
 }
 #endif

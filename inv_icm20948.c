@@ -3,6 +3,7 @@ extern "C"{
 #endif
 
 #include "inv_icm20948.h"
+#if INV_ICM20948_ENABLE
 float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 
 const unsigned int MPU9250_I2C_SLV4_EN = 0x80;
@@ -68,7 +69,7 @@ inv_imu_vector_table icm20948_VectorTable =
 
 
 inv_icm20948_handle ICM20948_Construct(inv_i2c _i2c, uint16_t _addr) {
-    inv_icm20948_handle rtv = (void *) realloc(IMU_Construct(_i2c, _addr), sizeof(inv_icm20948));
+    inv_icm20948_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_icm20948));
     memset((void *) ((char *) rtv + sizeof(inv_icm20948) - sizeof(inv_imu)), 0, sizeof(inv_icm20948) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -76,7 +77,7 @@ inv_icm20948_handle ICM20948_Construct(inv_i2c _i2c, uint16_t _addr) {
     return rtv;
 }
 inv_icm20948_handle ICM20948_Construct2(inv_spi _spi) {
-    inv_icm20948_handle rtv = (void *) realloc(IMU_Construct2(_spi), sizeof(inv_icm20948));
+    inv_icm20948_handle rtv = (void *) INV_REALLOC(IMU_Construct2(_spi), sizeof(inv_icm20948));
     memset((void *) ((char *) rtv + sizeof(inv_icm20948) - sizeof(inv_imu)), 0, sizeof(inv_icm20948) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -532,7 +533,7 @@ int ICM20948_SwitchBank(inv_icm20948_handle this, int _bank) {
     return IMU_WriteRegVerified((inv_imu_handle) this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
 }
 
-
+#endif //INV_XXX_ENABLE
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

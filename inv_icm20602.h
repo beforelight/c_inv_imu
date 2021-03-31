@@ -5,7 +5,7 @@ extern "C"{
 #ifndef INV_IMU_INV_ICM20602_H
 #define INV_IMU_INV_ICM20602_H
 #include "inv_imu.h"
-
+#if INV_ICM20602_ENABLE
 typedef struct __inv_icm20602 {
     inv_imu parents;
     float gyroUnit;
@@ -102,6 +102,9 @@ enum ICM20602_RegMap {
     ICM20602_ZA_OFFSET_H = 0x7D,            // READ/ WRITE
     ICM20602_ZA_OFFSET_L = 0x7E,            // READ/ WRITE
 };
+
+#endif //INV_XXX_ENABLE
+
 #endif //INV_IMU_INV_ICM20602_H
 
 

@@ -26,6 +26,7 @@ extern "C"{
 #define INV_FREE free
 #define INV_REALLOC realloc
 
+// 设置printf
 #if !defined(INV_PRINTF)
 #include<stdio.h>
 #define INV_PRINTF printf
@@ -177,7 +178,7 @@ inline int IMU_Convert3(inv_imu_handle this, float *temp) { return this->vtable-
 inline bool IMU_IsOpen(inv_imu_handle this) { return this->vtable->IsOpen(this); }
 
 const int IMU_SlaveAddressAutoDetect = 0;
-void IMU_Destruct(inv_imu_handle this) { free(this); }
+void IMU_Destruct(inv_imu_handle this) { INV_FREE(this); }
 inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_imu_handle IMU_Construct2(inv_spi _spi);
 int IMU_WriteReg(inv_imu_handle this, uint8_t reg, uint8_t val);

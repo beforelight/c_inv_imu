@@ -5,6 +5,7 @@ extern "C"{
 #ifndef INV_IMU_INV_MPU9250_H
 #define INV_IMU_INV_MPU9250_H
 #include "inv_imu.h"
+#if INV_MPU9250_ENABLE
 
 typedef struct __inv_mpu9250 {
     inv_imu parents;
@@ -38,8 +39,8 @@ int MPU9250_Convert2(inv_mpu9250_handle this, int16_t raw[9]);
 int MPU9250_Convert3(inv_mpu9250_handle this, float *temp);
 
 
-int MPU9250_SubI2cRead(inv_mpu9250_handle this,uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
-int MPU9250_SubI2cWrite(inv_mpu9250_handle this,uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
+int MPU9250_SubI2cRead(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
+int MPU9250_SubI2cWrite(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
 
 
 enum MPU9250_RegMap {
@@ -169,9 +170,8 @@ enum AK8963_RegMap {
     AK8963_ASAY = 0x11,
     AK8963_ASAZ = 0x12,
 };
-
+#endif //INV_XXX_ENABLE
 #endif //INV_IMU_INV_MPU9250_H
-
 
 
 #if defined(__cplusplus) || defined(c_plusplus)
