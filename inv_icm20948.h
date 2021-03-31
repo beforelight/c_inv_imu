@@ -19,7 +19,7 @@ typedef struct __inv_icm20948 {
 } inv_icm20948, *inv_icm20948_handle;
 
 
-void ICM20948_Destruct(inv_icm20948_handle this) { IMU_Destruct((void *) this); }
+void ICM20948_Destruct(inv_icm20948_handle this) { _IMU_Destruct((void *) this); }
 inv_icm20948_handle ICM20948_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_icm20948_handle ICM20948_Construct2(inv_spi _spi);
 

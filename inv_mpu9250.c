@@ -83,7 +83,8 @@ inv_imu_vector_table mpu9250_VectorTable =
                 .Convert =(void *) MPU9250_Convert,
                 .Convert2 =(void *) MPU9250_Convert2,
                 .Convert3 =(void *) MPU9250_Convert3,
-                .IsOpen =(void *) _IMU_IsOpen
+                .IsOpen =(void *) _IMU_IsOpen,
+                .Destruct = (void*) MPU9250_Destruct
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint16_t _addr) {

@@ -14,7 +14,7 @@ extern "C"{
 #define INV_MPU6050_ENABLE 1
 #define INV_MPU9250_ENABLE 1
 #define INV_ICM20602_ENABLE 1
-#define INV_ICM20600_ENABLE 0
+#define INV_ICM20600_ENABLE 1
 #define INV_ICM20948_ENABLE 1
 
 //切换 trace和debug
@@ -146,6 +146,7 @@ typedef struct __inv_imu_vector_table {
     int (*Convert2)(void *this, int16_t raw[9]);
     int (*Convert3)(void *this, float *temp);
     bool (*IsOpen)(void *this);
+    void (*Destruct)(void *this);
 } inv_imu_vector_table;
 
 typedef struct __inv_imu {
@@ -158,8 +159,6 @@ typedef struct __inv_imu {
     bool isOpen;
     inv_imu_config cfg;
 } inv_imu, *inv_imu_handle;
-
-
 
 
 inline int IMU_Init(inv_imu_handle this, inv_imu_config _cfg) { return this->vtable->Init(this, _cfg); }
@@ -176,9 +175,10 @@ inline int IMU_Convert(inv_imu_handle this, float array[9]) { return this->vtabl
 inline int IMU_Convert2(inv_imu_handle this, int16_t raw[9]) { return this->vtable->Convert2(this, raw); }
 inline int IMU_Convert3(inv_imu_handle this, float *temp) { return this->vtable->Convert3(this, temp); }
 inline bool IMU_IsOpen(inv_imu_handle this) { return this->vtable->IsOpen(this); }
+inline void IMU_Destruct(inv_imu_handle this) { return this->vtable->Destruct(this); }
 
 const int IMU_SlaveAddressAutoDetect = 0;
-void IMU_Destruct(inv_imu_handle this) { INV_FREE(this); }
+void _IMU_Destruct(inv_imu_handle this) { INV_FREE(this); }
 inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_imu_handle IMU_Construct2(inv_spi _spi);
 int IMU_WriteReg(inv_imu_handle this, uint8_t reg, uint8_t val);
@@ -186,7 +186,8 @@ int IMU_WriteRegVerified(inv_imu_handle this, uint8_t reg, uint8_t val);
 int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val);
 int IMU_ModifyReg(inv_imu_handle this, uint8_t reg, uint8_t val, uint8_t mask);
 bool _IMU_IsOpen(inv_imu_handle this) { return this->isOpen; }
-
+inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint16_t _addr);
+inv_imu_handle IMU_AutoConstruct2(inv_spi _spi);
 
 
 struct _inv_weak_map_int {
@@ -231,7 +232,6 @@ extern const struct _inv_weak_map_int ICM20948_GBW_MAP;
 #define ICM20948_ABW_MAP  MPU9250_ABW_MAP
 
 #endif //C_INV_IMU_INV_IMU_H
-
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

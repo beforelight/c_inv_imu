@@ -16,7 +16,7 @@ typedef struct __inv_icm20602 {
 } inv_icm20602, *inv_icm20602_handle;
 
 
-void ICM20602_Destruct(inv_icm20602_handle this) { IMU_Destruct((void *) this); }
+void ICM20602_Destruct(inv_icm20602_handle this) { _IMU_Destruct((void *) this); }
 inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_icm20602_handle ICM20602_Construct2(inv_spi _spi);
 

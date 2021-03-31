@@ -32,7 +32,8 @@ inv_imu_vector_table mpu6050_VectorTable = {
         .Convert =(void *) MPU6050_Convert,
         .Convert2 =(void *) MPU6050_Convert2,
         .Convert3 =(void *) MPU6050_Convert3,
-        .IsOpen =(void *) _IMU_IsOpen
+        .IsOpen =(void *) _IMU_IsOpen,
+        .Destruct = (void*) MPU6050_Destruct
 };
 
 inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint16_t _addr) {

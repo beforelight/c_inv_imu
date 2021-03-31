@@ -64,7 +64,8 @@ inv_imu_vector_table icm20948_VectorTable =
                 .Convert =(void *) ICM20948_Convert,
                 .Convert2 =(void *) ICM20948_Convert2,
                 .Convert3 =(void *) ICM20948_Convert3,
-                .IsOpen =(void *) _IMU_IsOpen
+                .IsOpen =(void *) _IMU_IsOpen,
+                .Destruct = (void*) ICM20948_Destruct
         };
 
 

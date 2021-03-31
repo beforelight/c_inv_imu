@@ -18,7 +18,8 @@ inv_imu_vector_table icm20600_VectorTable =
                 .Convert =(void *) ICM20602_Convert,
                 .Convert2 =(void *) ICM20602_Convert2,
                 .Convert3 =(void *) ICM20602_Convert3,
-                .IsOpen =(void *) _IMU_IsOpen
+                .IsOpen =(void *) _IMU_IsOpen,
+                .Destruct = (void*) ICM20600_Destruct
         };
 
 inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint16_t _addr) {
