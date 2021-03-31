@@ -292,6 +292,18 @@ const struct _inv_weak_map_int ICM20948_GBW_MAP = {
         .val =ICM20948_GBW_MAP_val,
         .n = sizeof(ICM20948_GBW_MAP_val) / sizeof(int)
 };
+inv_imu_config IMU_ConfigDefault() {
+    inv_imu_config result;
+    result.gyroFullScale = MPU_FS_2000dps;
+    result.gyroBandwidth = MPU_GBW_92;
+    result.gyroUnit = MPU_UNIT_DegPerSec;
+    result.accelFullScale = MPU_FS_8G;
+    result.accelBandwidth = MPU_ABW_99;
+    result.accelUnit = MPU_UNIT_MetersPerSquareSecond;
+
+
+    return result;
+}
 
 
 #if defined(__cplusplus) || defined(c_plusplus)
