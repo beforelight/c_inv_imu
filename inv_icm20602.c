@@ -101,7 +101,7 @@ int ICM20602_Init(inv_icm20602_handle this, inv_imu_config _cfg) {
     res |= IMU_WriteRegVerified((inv_imu_handle) this, (uint8_t) ICM20602_SMPLRT_DIV, 0);
 
     //配置陀螺仪lpf
-    _InvGetMapVal(ICM20948_GBW_MAP, this->parents.cfg.gyroBandwidth, bw);
+    _InvGetMapVal(ICM20602_GBW_MAP, this->parents.cfg.gyroBandwidth, bw);
     res |= IMU_WriteRegVerified((inv_imu_handle) this, (uint8_t) ICM20602_CONFIG, bw);
 
     //配置陀螺仪量程和单位
