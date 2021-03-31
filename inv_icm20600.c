@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_icm20600.h"
 
@@ -46,3 +46,8 @@ bool ICM20600_Detect(inv_icm20602_handle this) {
     }
     return false;
 }
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

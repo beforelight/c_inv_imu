@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_imu.h"
 
@@ -9,7 +9,7 @@ inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
     memset(rtv, 0, sizeof(inv_imu));
     rtv->i2c = _i2c;
     rtv->i2cTransfer.slaveAddress = _addr;
-    if (_addr == SlaveAddressAutoDetect) {
+    if (_addr == IMU_SlaveAddressAutoDetect) {
         rtv->addrAutoDetect = true;
     } else {
         rtv->addrAutoDetect = false;
@@ -292,3 +292,8 @@ const struct _inv_weak_map_int ICM20948_GBW_MAP = {
         .val =ICM20948_GBW_MAP_val,
         .n = sizeof(ICM20948_GBW_MAP_val) / sizeof(int)
 };
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

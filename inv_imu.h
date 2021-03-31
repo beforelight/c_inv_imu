@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #ifndef C_INV_IMU_INV_IMU_H
 #define C_INV_IMU_INV_IMU_H
@@ -10,13 +10,28 @@
 #include <stdlib.h>
 #include <string.h>
 
+//切换对模块的支持
+#define INV_MPU6050_ENABLE 1
+#define INV_MPU9250_ENABLE 1
+#define INV_ICM20602_ENABLE 1
+#define INV_ICM20600_ENABLE 0
+#define INV_ICM20948_ENABLE 1
+
+//切换 trace和debug
+#define INV_YES_TRACE 1
+#define INV_NO_DEBUG 0
+
+//设置使用什么堆内存管理
+#define INV_MALLOC malloc
+#define INV_FREE free
+#define INV_REALLOC realloc
 
 #if !defined(INV_PRINTF)
 #include<stdio.h>
 #define INV_PRINTF printf
 #endif //!defined(INV_PRINTF)
 
-#ifdef INV_YES_TRACE
+#if INV_YES_TRACE
 #define INV_TRACE_(fmt, ...) \
     INV_PRINTF("%s:%d:trace: " fmt "%s\r\n", __FILE__, __LINE__, __VA_ARGS__)
 #define INV_TRACE(...) INV_TRACE_(__VA_ARGS__, "")
@@ -24,7 +39,7 @@
 #define INV_TRACE(...)
 #endif //INV_YES_TRACE
 
-#ifndef INV_NO_DEBUG
+#if !INV_NO_DEBUG
 #define INV_DEBUG_(fmt, ...) \
     INV_PRINTF("%s:%d:debug: " fmt "%s\r\n", __FILE__, __LINE__, __VA_ARGS__)
 #define INV_DEBUG(...) INV_DEBUG_(__VA_ARGS__, "")
@@ -144,6 +159,8 @@ typedef struct __inv_imu {
 } inv_imu, *inv_imu_handle;
 
 
+
+
 inline int IMU_Init(inv_imu_handle this, inv_imu_config _cfg) { return this->vtable->Init(this, _cfg); }
 inline bool IMU_Detect(inv_imu_handle this) { return this->vtable->Detect(this); }
 inline int IMU_SelfTest(inv_imu_handle this) { return this->vtable->SelfTest(this); }
@@ -159,8 +176,7 @@ inline int IMU_Convert2(inv_imu_handle this, int16_t raw[9]) { return this->vtab
 inline int IMU_Convert3(inv_imu_handle this, float *temp) { return this->vtable->Convert3(this, temp); }
 inline bool IMU_IsOpen(inv_imu_handle this) { return this->vtable->IsOpen(this); }
 
-
-#define  SlaveAddressAutoDetect 0
+const int IMU_SlaveAddressAutoDetect = 0;
 void IMU_Destruct(inv_imu_handle this) { free(this); }
 inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_imu_handle IMU_Construct2(inv_spi _spi);
@@ -169,6 +185,7 @@ int IMU_WriteRegVerified(inv_imu_handle this, uint8_t reg, uint8_t val);
 int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val);
 int IMU_ModifyReg(inv_imu_handle this, uint8_t reg, uint8_t val, uint8_t mask);
 bool _IMU_IsOpen(inv_imu_handle this) { return this->isOpen; }
+
 
 
 struct _inv_weak_map_int {
@@ -213,3 +230,9 @@ extern const struct _inv_weak_map_int ICM20948_GBW_MAP;
 #define ICM20948_ABW_MAP  MPU9250_ABW_MAP
 
 #endif //C_INV_IMU_INV_IMU_H
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

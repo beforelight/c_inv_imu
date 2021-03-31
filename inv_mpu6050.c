@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_mpu6050.h"
 const uint16_t accelSelfTestEquation[32] = {
@@ -298,3 +298,10 @@ int MPU6050_Convert3(inv_mpu6050_handle this, float *temp) {
     }
     return 0;
 }
+
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #ifndef INV_IMU_INV_MPU6050_H
 #define INV_IMU_INV_MPU6050_H
@@ -116,3 +116,9 @@ enum MPU6050_RegMap {
     MPU6050_WHO_AM_I = 0x75,             //R
 };
 #endif //INV_IMU_INV_MPU6050_H
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

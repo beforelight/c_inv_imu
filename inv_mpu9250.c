@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_mpu9250.h"
 
@@ -178,7 +178,7 @@ int MPU9250_Init(inv_mpu9250_handle this, inv_imu_config _cfg) {
     this->ak8963Asa[1] = (1.0f + 0.00390625f * ((int16_t) (response[1]) - 128));
     this->ak8963Asa[2] = (1.0f + 0.00390625f * ((int16_t) (response[2]) - 128));
 
-    INV_TRACE("%f %f %f at ak8963Asa", ak8963Asa[0], ak8963Asa[1], ak8963Asa[2]);
+    INV_TRACE("%f %f %f at ak8963Asa", this->ak8963Asa[0], this->ak8963Asa[1], this->ak8963Asa[2]);
     val = MPU9250_AK8963_POWER_DOWN;
     res |= MPU9250_SubI2cWrite(this, MPU9250_AK8963_I2C_ADDR, (uint8_t) AK8963_CNTL, &val, 1);
 
@@ -578,3 +578,8 @@ int MPU9250_SubI2cWrite(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, cons
     }
     return res;
 }
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #ifndef INV_IMU_INV_ICM20602_H
 #define INV_IMU_INV_ICM20602_H
@@ -103,3 +103,10 @@ enum ICM20602_RegMap {
     ICM20602_ZA_OFFSET_L = 0x7E,            // READ/ WRITE
 };
 #endif //INV_IMU_INV_ICM20602_H
+
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

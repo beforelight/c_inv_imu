@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/31.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_icm20948.h"
 float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
@@ -531,3 +531,9 @@ int ICM20948_SwitchBank(inv_icm20948_handle this, int _bank) {
     this->bank = _bank;
     return IMU_WriteRegVerified((inv_imu_handle) this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
 }
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

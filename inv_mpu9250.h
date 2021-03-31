@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #ifndef INV_IMU_INV_MPU9250_H
 #define INV_IMU_INV_MPU9250_H
@@ -171,3 +171,9 @@ enum AK8963_RegMap {
 };
 
 #endif //INV_IMU_INV_MPU9250_H
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif

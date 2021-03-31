@@ -1,6 +1,6 @@
-﻿//
-// Created by 17616 on 2021/3/30.
-//
+﻿#if defined(__cplusplus) || defined(c_plusplus)
+extern "C"{
+#endif
 
 #include "inv_icm20602.h"
 
@@ -421,3 +421,9 @@ int ICM20602_Convert3(inv_icm20602_handle this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) (this->buf[6] << 8) | this->buf[7]) / 326.8f + 25.0f; }
     return 0;
 }
+
+
+
+#if defined(__cplusplus) || defined(c_plusplus)
+}
+#endif
