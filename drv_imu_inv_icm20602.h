@@ -1,11 +1,12 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
-
-#ifndef INV_IMU_INV_ICM20602_H
+﻿#ifndef INV_IMU_INV_ICM20602_H
 #define INV_IMU_INV_ICM20602_H
-#include "inv_imu.h"
+#include "drv_imu_invensense.h"
 #if INV_ICM20602_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
+
 typedef struct __inv_icm20602 {
     inv_imu parents;
     float gyroUnit;
@@ -16,23 +17,23 @@ typedef struct __inv_icm20602 {
 } inv_icm20602, *inv_icm20602_handle;
 
 
-void ICM20602_Destruct(inv_icm20602_handle this) { _IMU_Destruct((void *) this); }
+inline void ICM20602_Destruct(inv_icm20602_handle _this) { _IMU_Destruct((void *) _this); }
 inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_icm20602_handle ICM20602_Construct2(inv_spi _spi);
 
 
-int ICM20602_Init(inv_icm20602_handle this, inv_imu_config _cfg);
-bool ICM20602_Detect(inv_icm20602_handle this);
-int ICM20602_SelfTest(inv_icm20602_handle this);
-const char *ICM20602_Report(inv_icm20602_handle this) { return " icm20602"; }
-bool ICM20602_DataReady(inv_icm20602_handle this);
-int ICM20602_EnableDataReadyInt(inv_icm20602_handle this);
-int ICM20602_SoftReset(inv_icm20602_handle this);
-int ICM20602_ReadSensorBlocking(inv_icm20602_handle this);
-int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle this);
-int ICM20602_Convert(inv_icm20602_handle this, float array[9]);
-int ICM20602_Convert2(inv_icm20602_handle this, int16_t raw[9]);
-int ICM20602_Convert3(inv_icm20602_handle this, float *temp);
+int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg);
+bool ICM20602_Detect(inv_icm20602_handle _this);
+int ICM20602_SelfTest(inv_icm20602_handle _this);
+inline const char *ICM20602_Report(inv_icm20602_handle _this) { return " icm20602"; }
+bool ICM20602_DataReady(inv_icm20602_handle _this);
+int ICM20602_EnableDataReadyInt(inv_icm20602_handle _this);
+int ICM20602_SoftReset(inv_icm20602_handle _this);
+int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this);
+int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this);
+int ICM20602_Convert(inv_icm20602_handle _this, float array[9]);
+int ICM20602_Convert2(inv_icm20602_handle _this, int16_t raw[9]);
+int ICM20602_Convert3(inv_icm20602_handle _this, float *temp);
 
 
 enum ICM20602_RegMap {
@@ -105,11 +106,11 @@ enum ICM20602_RegMap {
 
 #endif //INV_XXX_ENABLE
 
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
+
 #endif //INV_IMU_INV_ICM20602_H
 
 
 
-
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif

@@ -1,9 +1,10 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
-
-#include "inv_icm20600.h"
+﻿#include "drv_imu_inv_icm20600.h"
 #if INV_ICM20600_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
+
 inv_imu_vector_table icm20600_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
@@ -19,7 +20,7 @@ inv_imu_vector_table icm20600_VectorTable =
                 .Convert2 =(void *) ICM20602_Convert2,
                 .Convert3 =(void *) ICM20602_Convert3,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void*) ICM20600_Destruct
+                .Destruct = (void*) ICM20600_Destruct,
         };
 
 inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint16_t _addr) {
@@ -32,23 +33,25 @@ inv_icm20600_handle ICM20600_Construct2(inv_spi _spi) {
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;
 }
-bool ICM20600_Detect(inv_icm20602_handle this) {
+bool ICM20600_Detect(inv_icm20602_handle _this) {
     uint8_t val = 0;
-    if (this->parents.addrAutoDetect) { this->parents.i2cTransfer.slaveAddress = 0x68; }
-    IMU_ReadReg((inv_imu_handle) this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; }
+    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x11 == val) {
         return true;
     }
     val = 0;
-    if (this->parents.addrAutoDetect) { this->parents.i2cTransfer.slaveAddress = 0x69; }
-    IMU_ReadReg((inv_imu_handle) this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x69; }
+    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x11 == val) {
         return true;
     }
     return false;
 }
 
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
+
 #endif //INV_XXX_ENABLE
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif
+

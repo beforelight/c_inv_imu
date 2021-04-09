@@ -1,8 +1,8 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
+﻿#include "drv_imu_invensense.h"
 
-#include "inv_imu.h"
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
 
 inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
     inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
@@ -24,14 +24,14 @@ inv_imu_handle IMU_Construct2(inv_spi _spi) {
 }
 
 
-int IMU_WriteReg(inv_imu_handle this, uint8_t reg, uint8_t val) {
+int IMU_WriteReg(inv_imu_handle _this, uint8_t reg, uint8_t val) {
     int res = 0;
-    if (this->i2c.masterTransferBlocking != NULL) {
-        this->i2cTransfer.subAddress = reg;
-        this->i2cTransfer.data = &val;
-        this->i2cTransfer.dataSize = 1;
-        this->i2cTransfer.direction = inv_i2c_direction_Write;
-        res = this->i2c.masterTransferBlocking(&this->i2cTransfer);
+    if (_this->i2c.masterTransferBlocking != NULL) {
+        _this->i2cTransfer.subAddress = reg;
+        _this->i2cTransfer.data = &val;
+        _this->i2cTransfer.dataSize = 1;
+        _this->i2cTransfer.direction = inv_i2c_direction_Write;
+        res = _this->i2c.masterTransferBlocking(&_this->i2cTransfer);
         if (res != 0) {
             INV_DEBUG("i2c write return code = %d", res);
         }
@@ -40,24 +40,24 @@ int IMU_WriteReg(inv_imu_handle this, uint8_t reg, uint8_t val) {
         uint8_t rxb[2];
         txb[0] = (reg & 0x7fU);
         txb[1] = val;
-        this->spiTransfer.dataSize = 2;
-        this->spiTransfer.rxData = rxb;
-        this->spiTransfer.txData = txb;
-        res = this->spi.masterTransferBlocking(&this->spiTransfer);
+        _this->spiTransfer.dataSize = 2;
+        _this->spiTransfer.rxData = rxb;
+        _this->spiTransfer.txData = txb;
+        res = _this->spi.masterTransferBlocking(&_this->spiTransfer);
         if (res != 0) {
             INV_DEBUG("spi write return code = %d", res);
         }
     }
     return res;
 }
-int IMU_WriteRegVerified(inv_imu_handle this, uint8_t reg, uint8_t val) {
+int IMU_WriteRegVerified(inv_imu_handle _this, uint8_t reg, uint8_t val) {
     uint8_t regVal;
     int res = 0;
-    res |= IMU_WriteReg(this, reg, val);
-    res |= IMU_ReadReg(this, reg, &regVal);
+    res |= IMU_WriteReg(_this, reg, val);
+    res |= IMU_ReadReg(_this, reg, &regVal);
     if (res == 0 && val != regVal) {
-        res |= IMU_WriteReg(this, reg, val);
-        res |= IMU_ReadReg(this, reg, &regVal);
+        res |= IMU_WriteReg(_this, reg, val);
+        res |= IMU_ReadReg(_this, reg, &regVal);
         if (res == 0 && val != regVal) {
             INV_DEBUG("imu  rw error");
             res |= -1;
@@ -65,14 +65,14 @@ int IMU_WriteRegVerified(inv_imu_handle this, uint8_t reg, uint8_t val) {
     }
     return res;
 }
-int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val) {
+int IMU_ReadReg(inv_imu_handle _this, uint8_t reg, uint8_t *val) {
     int res = 0;
-    if (this->i2c.masterTransferBlocking != NULL) {
-        this->i2cTransfer.subAddress = reg;
-        this->i2cTransfer.data = val;
-        this->i2cTransfer.dataSize = 1;
-        this->i2cTransfer.direction = inv_i2c_direction_Read;
-        res = this->i2c.masterTransferBlocking(&this->i2cTransfer);
+    if (_this->i2c.masterTransferBlocking != NULL) {
+        _this->i2cTransfer.subAddress = reg;
+        _this->i2cTransfer.data = val;
+        _this->i2cTransfer.dataSize = 1;
+        _this->i2cTransfer.direction = inv_i2c_direction_Read;
+        res = _this->i2c.masterTransferBlocking(&_this->i2cTransfer);
         if (res != 0) {
             INV_DEBUG("i2c read return code = %d", res);
         }
@@ -80,10 +80,10 @@ int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val) {
         uint8_t txb[2];
         uint8_t rxb[2];
         txb[0] = (1U << 7U) | (reg & 0x7f);
-        this->spiTransfer.dataSize = 2;
-        this->spiTransfer.rxData = rxb;
-        this->spiTransfer.txData = txb;
-        res = this->spi.masterTransferBlocking(&this->spiTransfer);
+        _this->spiTransfer.dataSize = 2;
+        _this->spiTransfer.rxData = rxb;
+        _this->spiTransfer.txData = txb;
+        res = _this->spi.masterTransferBlocking(&_this->spiTransfer);
         if (res != 0) {
             INV_DEBUG("spi read return code = %d", res);
         } else {
@@ -93,12 +93,12 @@ int IMU_ReadReg(inv_imu_handle this, uint8_t reg, uint8_t *val) {
     }
     return res;
 }
-int IMU_ModifyReg(inv_imu_handle this, uint8_t reg, uint8_t val, uint8_t mask) {
+int IMU_ModifyReg(inv_imu_handle _this, uint8_t reg, uint8_t val, uint8_t mask) {
     uint8_t regVal;
     int res = 0;
-    res |= IMU_ReadReg(this, reg, &regVal);
-    res |= IMU_WriteRegVerified(this, reg, (regVal & (~mask)) | (val & mask));
-    res |= IMU_ReadReg(this, reg, &regVal);
+    res |= IMU_ReadReg(_this, reg, &regVal);
+    res |= IMU_WriteRegVerified(_this, reg, (regVal & (~mask)) | (val & mask));
+    res |= IMU_ReadReg(_this, reg, &regVal);
     if ((regVal & mask) != (val & mask)) {
         INV_DEBUG("imu rw error");
         res |= -1;
@@ -306,6 +306,6 @@ inv_imu_config IMU_ConfigDefault() {
 }
 
 
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif

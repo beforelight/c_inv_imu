@@ -1,11 +1,13 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
+﻿
 
 #ifndef INV_IMU_INV_MPU6050_H
 #define INV_IMU_INV_MPU6050_H
-#include "inv_imu.h"
+#include "drv_imu_invensense.h"
 #if INV_MPU6050_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
 
 typedef struct __inv_mpu6050 {
     inv_imu parents;
@@ -15,21 +17,21 @@ typedef struct __inv_mpu6050 {
 } inv_mpu6050, *inv_mpu6050_handle;
 
 
-void MPU6050_Destruct(inv_mpu6050_handle this) { _IMU_Destruct((void *) this); }
+inline void MPU6050_Destruct(inv_mpu6050_handle _this) { _IMU_Destruct((void *) _this); }
 inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint16_t _addr);
 
-int MPU6050_Init(inv_mpu6050_handle this, inv_imu_config _cfg);
-bool MPU6050_Detect(inv_mpu6050_handle this);
-int MPU6050_SelfTest(inv_mpu6050_handle this);
-const char *MPU6050_Report(inv_mpu6050_handle this) { return "mpu6050"; }
-bool MPU6050_DataReady(inv_mpu6050_handle this);
-int MPU6050_EnableDataReadyInt(inv_mpu6050_handle this);
-int MPU6050_SoftReset(inv_mpu6050_handle this);
-int MPU6050_ReadSensorBlocking(inv_mpu6050_handle this);
-int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle this);
-int MPU6050_Convert(inv_mpu6050_handle this, float array[9]);
-int MPU6050_Convert2(inv_mpu6050_handle this, int16_t raw[9]);
-int MPU6050_Convert3(inv_mpu6050_handle this, float *temp);
+int MPU6050_Init(inv_mpu6050_handle _this, inv_imu_config _cfg);
+bool MPU6050_Detect(inv_mpu6050_handle _this);
+int MPU6050_SelfTest(inv_mpu6050_handle _this);
+inline const char *MPU6050_Report(inv_mpu6050_handle _this) { return "mpu6050"; }
+bool MPU6050_DataReady(inv_mpu6050_handle _this);
+int MPU6050_EnableDataReadyInt(inv_mpu6050_handle _this);
+int MPU6050_SoftReset(inv_mpu6050_handle _this);
+int MPU6050_ReadSensorBlocking(inv_mpu6050_handle _this);
+int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle _this);
+int MPU6050_Convert(inv_mpu6050_handle _this, float array[9]);
+int MPU6050_Convert2(inv_mpu6050_handle _this, int16_t raw[9]);
+int MPU6050_Convert3(inv_mpu6050_handle _this, float *temp);
 
 
 enum MPU6050_RegMap {
@@ -116,11 +118,13 @@ enum MPU6050_RegMap {
     MPU6050_FIFO_R_W = 0x74,             //R/W
     MPU6050_WHO_AM_I = 0x75,             //R
 };
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
+
 #endif //INV_XXX_ENABLE
 #endif //INV_IMU_INV_MPU6050_H
 
 
 
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif

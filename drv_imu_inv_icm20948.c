@@ -1,9 +1,12 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
+﻿
 
-#include "inv_icm20948.h"
+#include "drv_imu_inv_icm20948.h"
 #if INV_ICM20948_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
+
 float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 
 const unsigned int MPU9250_I2C_SLV4_EN = 0x80;
@@ -85,134 +88,134 @@ inv_icm20948_handle ICM20948_Construct2(inv_spi _spi) {
     rtv->bank = INT32_MAX;//确保一开始就切换bank
     return rtv;
 }
-int ICM20948_Init(inv_icm20948_handle this, inv_imu_config _cfg) {
-    this->parents.cfg = _cfg;
-    this->parents.isOpen = false;
+int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg) {
+    _this->parents.cfg = _cfg;
+    _this->parents.isOpen = false;
     int res = 0;
     int bw;
     int fs;
     float unit;
     float unit_from;
 
-    if (!IMU_Detect((inv_imu_handle) this)) { return -1; }
+    if (!IMU_Detect((inv_imu_handle) _this)) { return -1; }
     //软复位
-    res |= IMU_SoftReset((inv_imu_handle) this);
+    res |= IMU_SoftReset((inv_imu_handle) _this);
 
     //打开所有传感器
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_PWR_MGMT_2, 0);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_PWR_MGMT_2, 0);
 
     //1.125khz采样率
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_GYRO_SMPLRT_DIV, 0);
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_ACCEL_SMPLRT_DIV_1, 0);
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_ACCEL_SMPLRT_DIV_2, 0);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_GYRO_SMPLRT_DIV, 0);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_ACCEL_SMPLRT_DIV_1, 0);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_ACCEL_SMPLRT_DIV_2, 0);
 
     //配置陀螺仪lpf
-    _InvGetMapVal(ICM20948_GBW_MAP, this->parents.cfg.gyroBandwidth, bw);
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_GYRO_CONFIG_1, 1 | (bw << 3));
+    _InvGetMapVal(ICM20948_GBW_MAP, _this->parents.cfg.gyroBandwidth, bw);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_GYRO_CONFIG_1, 1 | (bw << 3));
 
     //配置陀螺仪量程和单位
-    _InvGetMapVal(mpu_gyro_unit_dps_map, this->parents.cfg.gyroFullScale, unit);
-    _InvGetMapVal(mpu_gyro_unit_from_dps_map, this->parents.cfg.gyroUnit, unit_from);
-    this->gyroUnit = unit * unit_from;
+    _InvGetMapVal(mpu_gyro_unit_dps_map, _this->parents.cfg.gyroFullScale, unit);
+    _InvGetMapVal(mpu_gyro_unit_from_dps_map, _this->parents.cfg.gyroUnit, unit_from);
+    _this->gyroUnit = unit * unit_from;
 
-    _InvGetMapVal(mpu_gyro_fs_map, this->parents.cfg.gyroFullScale, fs);
-    res |= ICM20948_ModifyReg(this, (uint16_t) ICM20948_GYRO_CONFIG_1, fs << 1, 3 << 1);
+    _InvGetMapVal(mpu_gyro_fs_map, _this->parents.cfg.gyroFullScale, fs);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_GYRO_CONFIG_1, fs << 1, 3 << 1);
 
     //配置加速度计lpf
-    _InvGetMapVal(ICM20948_ABW_MAP, this->parents.cfg.accelBandwidth, bw);
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_ACCEL_CONFIG, 1 | (bw << 3));
+    _InvGetMapVal(ICM20948_ABW_MAP, _this->parents.cfg.accelBandwidth, bw);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_ACCEL_CONFIG, 1 | (bw << 3));
 
     //配置加速度计量程和单位
-    _InvGetMapVal(mpu_accel_unit_G_map, this->parents.cfg.accelFullScale, unit);
-    _InvGetMapVal(mpu_accel_unit_from_G_map, this->parents.cfg.accelUnit, unit_from);
-    this->accelUnit = unit * unit_from;
+    _InvGetMapVal(mpu_accel_unit_G_map, _this->parents.cfg.accelFullScale, unit);
+    _InvGetMapVal(mpu_accel_unit_from_G_map, _this->parents.cfg.accelUnit, unit_from);
+    _this->accelUnit = unit * unit_from;
 
-    _InvGetMapVal(mpu_accel_fs_map, this->parents.cfg.accelFullScale, fs);
-    res |= ICM20948_ModifyReg(this, (uint16_t) ICM20948_ACCEL_CONFIG, fs << 1, 3 << 1);
+    _InvGetMapVal(mpu_accel_fs_map, _this->parents.cfg.accelFullScale, fs);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_ACCEL_CONFIG, fs << 1, 3 << 1);
 
     //设置温度输出lpf
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_TEMP_CONFIG, 6); //8hz
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_TEMP_CONFIG, 6); //8hz
 
     //开启数据更新中断
-    res |= IMU_EnableDataReadyInt((inv_imu_handle) this);
+    res |= IMU_EnableDataReadyInt((inv_imu_handle) _this);
 
     if (res != 0) { return res; }
-    this->parents.isOpen = false;
+    _this->parents.isOpen = false;
 
     //设置内部i2c
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_MST_CTRL, 1 << 4 | 12);//471khz，连续读模式
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_USER_CTRL, 1 << 5);//开启i2c主模式
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_MST_CTRL, 1 << 4 | 12);//471khz，连续读模式
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_USER_CTRL, 1 << 5);//开启i2c主模式
 
     //开始设置ak8963
-    res |= ICM20948_SubI2cRead(this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_WIA2, &this->ak09916DeviceId, 1);
+    res |= ICM20948_SubI2cRead(_this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_WIA2, &_this->ak09916DeviceId, 1);
     if (res != 0) { return res; }
 
     //复位
     uint8_t val = 0x01;
-    res |= ICM20948_SubI2cWrite(this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL3, &val, 1);
+    res |= ICM20948_SubI2cWrite(_this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL3, &val, 1);
     val = 0;
-    res |= ICM20948_SubI2cWrite(this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL2, &val, 1);
+    res |= ICM20948_SubI2cWrite(_this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL2, &val, 1);
 
     //设置连续读ak8963到fifo
     val = 0x5D;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_MST_CTRL, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_MST_CTRL, val);
 
     val = ICM20948_AK09916_I2C_ADDR | 0x80;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_SLV0_ADDR, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_SLV0_ADDR, val);
 
     val = (uint8_t) AK09916_ST1;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_SLV0_REG, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_SLV0_REG, val);
 
 
     //唤醒ak09916
     val = (1 << 3);
-    res |= ICM20948_SubI2cWrite(this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL2, &val, 1);
+    res |= ICM20948_SubI2cWrite(_this, ICM20948_AK09916_I2C_ADDR, (uint8_t) AK09916_CNTL2, &val, 1);
 
     val = 0x89;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_SLV0_CTRL, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_SLV0_CTRL, val);
 
     val = 0x09;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_SLV4_CTRL, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_SLV4_CTRL, val);
 
     val = 0x81;
-    res |= ICM20948_WriteRegVerified(this, (uint16_t) ICM20948_I2C_MST_DELAY_CTRL, val);
+    res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_I2C_MST_DELAY_CTRL, val);
 
 
     if (res == 0) {
-        this->parents.isOpen = true;
+        _this->parents.isOpen = true;
         return 0;
     } else {
         return res;
     }
 }
-bool ICM20948_Detect(inv_icm20948_handle this) {
+bool ICM20948_Detect(inv_icm20948_handle _this) {
     uint8_t val = 0;
-    if (this->parents.addrAutoDetect) { this->parents.i2cTransfer.slaveAddress = 0x68; };
-    ICM20948_SwitchBank(this, 0);
-    ICM20948_ReadReg(this, (uint16_t) ICM20948_WHO_AM_I, &val);
+    if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; };
+    ICM20948_SwitchBank(_this, 0);
+    ICM20948_ReadReg(_this, (uint16_t) ICM20948_WHO_AM_I, &val);
     if (0xEA == val) {
         return true;
     }
     val = 0;
-    if (this->parents.addrAutoDetect) { this->parents.i2cTransfer.slaveAddress = 0x69; };
-    ICM20948_SwitchBank(this, 0);
-    ICM20948_ReadReg(this, (uint16_t) ICM20948_WHO_AM_I, &val);
+    if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x69; };
+    ICM20948_SwitchBank(_this, 0);
+    ICM20948_ReadReg(_this, (uint16_t) ICM20948_WHO_AM_I, &val);
     if (0xEA == val) {
         return true;
     }
     return false;
 }
-int ICM20948_SelfTest(inv_icm20948_handle this) {
-    if (!IMU_IsOpen((inv_imu_handle) this)) { return -1; }
+int ICM20948_SelfTest(inv_icm20948_handle _this) {
+    if (!IMU_IsOpen((inv_imu_handle) _this)) { return -1; }
     int res = 0;
-    inv_imu_config backup_cfg = this->parents.cfg;
+    inv_imu_config backup_cfg = _this->parents.cfg;
     inv_imu_config st_cfg = IMU_ConfigDefault();
     st_cfg.gyroFullScale = MPU_FS_250dps;
     st_cfg.accelFullScale = MPU_FS_2G;
     st_cfg.accelBandwidth = MPU_ABW_99;
     st_cfg.gyroBandwidth = MPU_GBW_92;
-    if (0 != IMU_Init((inv_imu_handle) this, st_cfg)) {
-        IMU_Init((inv_imu_handle) this, backup_cfg);
+    if (0 != IMU_Init((inv_imu_handle) _this, st_cfg)) {
+        IMU_Init((inv_imu_handle) _this, backup_cfg);
         return -1;
     }
     int32_t gyro_bias_st[3], gyro_bias_regular[3];
@@ -229,12 +232,12 @@ int ICM20948_SelfTest(inv_icm20948_handle this) {
 
     int times;
     times = 50;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
     times = 50;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) this);
-        IMU_Convert2((inv_imu_handle) this, abuf);
+        while (!IMU_DataReady((inv_imu_handle) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
+        IMU_Convert2((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
@@ -242,16 +245,16 @@ int ICM20948_SelfTest(inv_icm20948_handle this) {
     }
 
     //打开自检输出
-    res |= ICM20948_ModifyReg(this, (uint16_t) ICM20948_GYRO_CONFIG_2, 0b111 << 3, 0b111 << 3);
-    res |= ICM20948_ModifyReg(this, (uint16_t) ICM20948_ACCEL_CONFIG_2, 0b111 << 3, 0b111 << 3);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_GYRO_CONFIG_2, 0b111 << 3, 0b111 << 3);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_ACCEL_CONFIG_2, 0b111 << 3, 0b111 << 3);
 
     times = 50;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
     times = 50;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) this);
-        IMU_Convert2((inv_imu_handle) this, abuf);
+        while (!IMU_DataReady((inv_imu_handle) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
+        IMU_Convert2((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -270,9 +273,9 @@ int ICM20948_SelfTest(inv_icm20948_handle this) {
     uint8_t regs[3];
     int otp_value_zero = 0;
     int st_shift_prod[3], st_shift_cust[3], i;
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_X_ACCEL, regs);
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_Y_ACCEL, regs + 1);
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_Z_ACCEL, regs + 2);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_X_ACCEL, regs);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_Y_ACCEL, regs + 1);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_Z_ACCEL, regs + 2);
     for (i = 0; i < 3; i++) {
         if (regs[i] != 0) {
             st_shift_prod[i] = sSelfTestEquation[regs[i] - 1];
@@ -300,9 +303,9 @@ int ICM20948_SelfTest(inv_icm20948_handle this) {
     }
 
     //计算陀螺仪自检结果
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_X_GYRO, regs);
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_Y_GYRO, regs + 1);
-    res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_SELF_TEST_Z_GYRO, regs + 2);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_X_GYRO, regs);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_Y_GYRO, regs + 1);
+    res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_SELF_TEST_Z_GYRO, regs + 2);
     for (i = 0; i < 3; i++) {
         if (regs[i] != 0) {
             st_shift_prod[i] = sSelfTestEquation[regs[i] - 1];
@@ -330,80 +333,80 @@ int ICM20948_SelfTest(inv_icm20948_handle this) {
     }
 
     //恢复原来的配置
-    res |= IMU_Init((inv_imu_handle) this, backup_cfg);
+    res |= IMU_Init((inv_imu_handle) _this, backup_cfg);
     return res | (gyro_result << 1) | accel_result;
 }
-bool ICM20948_DataReady(inv_icm20948_handle this) {
+bool ICM20948_DataReady(inv_icm20948_handle _this) {
     uint8_t val = 0;
-    ICM20948_ReadReg(this, (uint16_t) ICM20948_INT_STATUS_1, &val);
+    ICM20948_ReadReg(_this, (uint16_t) ICM20948_INT_STATUS_1, &val);
     return (val & 0x01) == 0x01;
 }
-int ICM20948_EnableDataReadyInt(inv_icm20948_handle this) {
-    return ICM20948_ModifyReg(this, (uint16_t) ICM20948_INT_ENABLE_1, 0x01, 0x01);
+int ICM20948_EnableDataReadyInt(inv_icm20948_handle _this) {
+    return ICM20948_ModifyReg(_this, (uint16_t) ICM20948_INT_ENABLE_1, 0x01, 0x01);
 }
-int ICM20948_SoftReset(inv_icm20948_handle this) {
+int ICM20948_SoftReset(inv_icm20948_handle _this) {
     return 0;
 }
-int ICM20948_ReadSensorBlocking(inv_icm20948_handle this) {
-    if (this->bank != 0) {
-        ICM20948_SwitchBank(this, 0);
+int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this) {
+    if (_this->bank != 0) {
+        ICM20948_SwitchBank(_this, 0);
     }
     int res;
-    if (this->parents.i2c.masterTransferBlocking != NULL) {
-        this->parents.i2cTransfer.subAddress = (uint8_t) ICM20948_ACCEL_XOUT_H;
-        this->parents.i2cTransfer.data = this->buf;
-        this->parents.i2cTransfer.dataSize = 23;
-        this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
-        res = this->parents.i2c.masterTransferBlocking(&this->parents.i2cTransfer);
+    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+        _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20948_ACCEL_XOUT_H;
+        _this->parents.i2cTransfer.data = _this->buf;
+        _this->parents.i2cTransfer.dataSize = 23;
+        _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
+        res = _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
             INV_DEBUG("i2c read return code = %d", res);
         }
     } else {
-        this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
-        this->parents.spiTransfer.dataSize = 24;
-        this->parents.spiTransfer.rxData = this->rxbuf;
-        this->parents.spiTransfer.txData = this->txbuf;
-        res = this->parents.spi.masterTransferBlocking(&this->parents.spiTransfer);
+        _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
+        _this->parents.spiTransfer.dataSize = 24;
+        _this->parents.spiTransfer.rxData = _this->rxbuf;
+        _this->parents.spiTransfer.txData = _this->txbuf;
+        res = _this->parents.spi.masterTransferBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
             INV_DEBUG("spi read return code = %d", res);
         }
     }
     return res;
 }
-int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle this) {
-    if (this->bank != 0) {
-        ICM20948_SwitchBank(this, 0);
+int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this) {
+    if (_this->bank != 0) {
+        ICM20948_SwitchBank(_this, 0);
     }
     int res;
-    if (this->parents.i2c.masterTransferBlocking != NULL) {
-        this->parents.i2cTransfer.subAddress = (uint8_t) ICM20948_ACCEL_XOUT_H;
-        this->parents.i2cTransfer.data = this->buf;
-        this->parents.i2cTransfer.dataSize = 23;
-        this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
-        res = this->parents.i2c.masterTransferNonBlocking(&this->parents.i2cTransfer);
+    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+        _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20948_ACCEL_XOUT_H;
+        _this->parents.i2cTransfer.data = _this->buf;
+        _this->parents.i2cTransfer.dataSize = 23;
+        _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
+        res = _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
             INV_DEBUG("i2c read return code = %d", res);
         }
     } else {
-        this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
-        this->parents.spiTransfer.dataSize = 24;
-        this->parents.spiTransfer.rxData = this->rxbuf;
-        this->parents.spiTransfer.txData = this->txbuf;
-        res = this->parents.spi.masterTransferNonBlocking(&this->parents.spiTransfer);
+        _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
+        _this->parents.spiTransfer.dataSize = 24;
+        _this->parents.spiTransfer.rxData = _this->rxbuf;
+        _this->parents.spiTransfer.txData = _this->txbuf;
+        res = _this->parents.spi.masterTransferNonBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
             INV_DEBUG("spi read return code = %d", res);
         }
     }
     return res;
 }
-int ICM20948_Convert(inv_icm20948_handle this, float *array) {
-    uint8_t *buf = this->buf;
-    array[0] = this->accelUnit * ((int16_t) ((buf[0] << 8) | buf[1]));
-    array[1] = this->accelUnit * ((int16_t) ((buf[2] << 8) | buf[3]));
-    array[2] = this->accelUnit * ((int16_t) ((buf[4] << 8) | buf[5]));
-    array[3] = this->gyroUnit * ((int16_t) ((buf[8] << 8) | buf[9]));
-    array[4] = this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
-    array[5] = this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
+int ICM20948_Convert(inv_icm20948_handle _this, float *array) {
+    uint8_t *buf = _this->buf;
+    array[0] = _this->accelUnit * ((int16_t) ((buf[0] << 8) | buf[1]));
+    array[1] = _this->accelUnit * ((int16_t) ((buf[2] << 8) | buf[3]));
+    array[2] = _this->accelUnit * ((int16_t) ((buf[4] << 8) | buf[5]));
+    array[3] = _this->gyroUnit * ((int16_t) ((buf[8] << 8) | buf[9]));
+    array[4] = _this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
+    array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
@@ -419,8 +422,8 @@ int ICM20948_Convert(inv_icm20948_handle this, float *array) {
     array[8] = magUnit * ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int ICM20948_Convert2(inv_icm20948_handle this, int16_t *raw) {
-    uint8_t *buf = this->buf;
+int ICM20948_Convert2(inv_icm20948_handle _this, int16_t *raw) {
+    uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
     raw[2] = ((int16_t) ((buf[4] << 8) | buf[5]));
@@ -442,60 +445,60 @@ int ICM20948_Convert2(inv_icm20948_handle this, int16_t *raw) {
     raw[8] = ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int ICM20948_Convert3(inv_icm20948_handle this, float *temp) {
-    if (temp) { *temp = (float) ((int16_t) ((this->buf[12] << 8) | this->buf[13])) / 333.87f + 21; }
+int ICM20948_Convert3(inv_icm20948_handle _this, float *temp) {
+    if (temp) { *temp = (float) ((int16_t) ((_this->buf[12] << 8) | _this->buf[13])) / 333.87f + 21; }
     return 0;
 }
-int ICM20948_SubI2cRead(inv_icm20948_handle this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len) {
+int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len) {
     uint8_t index = 0;
     uint8_t status = 0;
     uint32_t timeout = 0;
     uint8_t tmp = 0;
     int res = 0;
     tmp = addr | 0x80;
-    res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_ADDR, tmp);
+    res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_ADDR, tmp);
     while (index < len) {
         tmp = reg + index;
-        res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_REG, tmp);
+        res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_REG, tmp);
         tmp = MPU9250_I2C_SLV4_EN;
-        res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
+        res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
                 INV_DEBUG("SubI2cRead time out");
                 return -2;
             }
-            res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
+            res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
         } while ((status & MPU9250_I2C_SLV4_DONE) == 0);
         if (status & MPU9250_I2C_SLV4_NACK) {
             INV_DEBUG("SubI2cRead no ack");
             return -3;
         }
-        res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_I2C_SLV4_DI, val + index);
+        res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_SLV4_DI, val + index);
         index++;
     }
     return res;
 }
-int ICM20948_SubI2cWrite(inv_icm20948_handle this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len) {
+int ICM20948_SubI2cWrite(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len) {
     uint32_t timeout = 0;
     uint8_t status = 0;
     uint8_t tmp = 0;
     uint8_t index = 0;
     int res = 0;
     tmp = addr;
-    res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_ADDR, tmp);
+    res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_ADDR, tmp);
     while (index < len) {
         tmp = reg + index;
-        res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_REG, tmp);
+        res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_REG, tmp);
         tmp = val[index];
-        res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_DO, tmp);
+        res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_DO, tmp);
         tmp = MPU9250_I2C_SLV4_EN;
-        res |= ICM20948_WriteReg(this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
+        res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
                 INV_DEBUG("SubI2cWrite time out");
                 return -2;
             }
-            res |= ICM20948_ReadReg(this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
+            res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
         } while ((status & MPU9250_I2C_SLV4_DONE) == 0);
         if (status & MPU9250_I2C_SLV4_NACK) {
             INV_DEBUG("SubI2cWrite no ack");
@@ -505,37 +508,38 @@ int ICM20948_SubI2cWrite(inv_icm20948_handle this, uint8_t addr, uint8_t reg, co
     }
     return res;
 }
-int ICM20948_WriteReg(inv_icm20948_handle this, uint16_t reg, const uint8_t val) {
-    if (this->bank != reg >> 8) {
-        ICM20948_SwitchBank(this, reg >> 8);
+int ICM20948_WriteReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val) {
+    if (_this->bank != reg >> 8) {
+        ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_WriteReg((inv_imu_handle) this, reg, val);
+    return IMU_WriteReg((inv_imu_handle) _this, reg, val);
 }
-int ICM20948_WriteRegVerified(inv_icm20948_handle this, uint16_t reg, const uint8_t val) {
-    if (this->bank != reg >> 8) {
-        ICM20948_SwitchBank(this, reg >> 8);
+int ICM20948_WriteRegVerified(inv_icm20948_handle _this, uint16_t reg, const uint8_t val) {
+    if (_this->bank != reg >> 8) {
+        ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_WriteRegVerified((inv_imu_handle) this, reg, val);
+    return IMU_WriteRegVerified((inv_imu_handle) _this, reg, val);
 }
-int ICM20948_ReadReg(inv_icm20948_handle this, uint16_t reg, uint8_t *val) {
-    if (this->bank != reg >> 8) {
-        ICM20948_SwitchBank(this, reg >> 8);
+int ICM20948_ReadReg(inv_icm20948_handle _this, uint16_t reg, uint8_t *val) {
+    if (_this->bank != reg >> 8) {
+        ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_ReadReg((inv_imu_handle) this, reg, val);
+    return IMU_ReadReg((inv_imu_handle) _this, reg, val);
 }
-int ICM20948_ModifyReg(inv_icm20948_handle this, uint16_t reg, const uint8_t val, const uint8_t mask) {
-    if (this->bank != reg >> 8) {
-        ICM20948_SwitchBank(this, reg >> 8);
+int ICM20948_ModifyReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val, const uint8_t mask) {
+    if (_this->bank != reg >> 8) {
+        ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_ModifyReg((inv_imu_handle) this, reg, val, mask);
+    return IMU_ModifyReg((inv_imu_handle) _this, reg, val, mask);
 }
-int ICM20948_SwitchBank(inv_icm20948_handle this, int _bank) {
-    this->bank = _bank;
-    return IMU_WriteRegVerified((inv_imu_handle) this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
+int ICM20948_SwitchBank(inv_icm20948_handle _this, int _bank) {
+    _this->bank = _bank;
+    return IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
 }
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
 
 #endif //INV_XXX_ENABLE
 
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif

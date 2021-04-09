@@ -1,11 +1,11 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
-
-#ifndef INV_IMU_INV_ICM20948_H
+﻿#ifndef INV_IMU_INV_ICM20948_H
 #define INV_IMU_INV_ICM20948_H
-#include "inv_imu.h"
+#include "drv_imu_invensense.h"
 #if INV_ICM20948_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
 
 typedef struct __inv_icm20948 {
     inv_imu parents;
@@ -19,32 +19,32 @@ typedef struct __inv_icm20948 {
 } inv_icm20948, *inv_icm20948_handle;
 
 
-void ICM20948_Destruct(inv_icm20948_handle this) { _IMU_Destruct((void *) this); }
+inline void ICM20948_Destruct(inv_icm20948_handle _this) { _IMU_Destruct((void *) _this); }
 inv_icm20948_handle ICM20948_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_icm20948_handle ICM20948_Construct2(inv_spi _spi);
 
 
-int ICM20948_Init(inv_icm20948_handle this, inv_imu_config _cfg);
-bool ICM20948_Detect(inv_icm20948_handle this);
-int ICM20948_SelfTest(inv_icm20948_handle this);
-const char *ICM20948_Report(inv_icm20948_handle this) { return " icm20948"; }
-bool ICM20948_DataReady(inv_icm20948_handle this);
-int ICM20948_EnableDataReadyInt(inv_icm20948_handle this);
-int ICM20948_SoftReset(inv_icm20948_handle this);
-int ICM20948_ReadSensorBlocking(inv_icm20948_handle this);
-int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle this);
-int ICM20948_Convert(inv_icm20948_handle this, float array[9]);
-int ICM20948_Convert2(inv_icm20948_handle this, int16_t raw[9]);
-int ICM20948_Convert3(inv_icm20948_handle this, float *temp);
+int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg);
+bool ICM20948_Detect(inv_icm20948_handle _this);
+int ICM20948_SelfTest(inv_icm20948_handle _this);
+inline const char *ICM20948_Report(inv_icm20948_handle _this) { return " icm20948"; }
+bool ICM20948_DataReady(inv_icm20948_handle _this);
+int ICM20948_EnableDataReadyInt(inv_icm20948_handle _this);
+int ICM20948_SoftReset(inv_icm20948_handle _this);
+int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this);
+int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this);
+int ICM20948_Convert(inv_icm20948_handle _this, float array[9]);
+int ICM20948_Convert2(inv_icm20948_handle _this, int16_t raw[9]);
+int ICM20948_Convert3(inv_icm20948_handle _this, float *temp);
 
 
-int ICM20948_SubI2cRead(inv_icm20948_handle this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
-int ICM20948_SubI2cWrite(inv_icm20948_handle this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
-int ICM20948_WriteReg(inv_icm20948_handle this, uint16_t reg, const uint8_t val);
-int ICM20948_WriteRegVerified(inv_icm20948_handle this, uint16_t reg, const uint8_t val);
-int ICM20948_ReadReg(inv_icm20948_handle this, uint16_t reg, uint8_t *val);
-int ICM20948_ModifyReg(inv_icm20948_handle this, uint16_t reg, const uint8_t val, const uint8_t mask);
-int ICM20948_SwitchBank(inv_icm20948_handle this, int _bank);
+int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
+int ICM20948_SubI2cWrite(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
+int ICM20948_WriteReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val);
+int ICM20948_WriteRegVerified(inv_icm20948_handle _this, uint16_t reg, const uint8_t val);
+int ICM20948_ReadReg(inv_icm20948_handle _this, uint16_t reg, uint8_t *val);
+int ICM20948_ModifyReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val, const uint8_t mask);
+int ICM20948_SwitchBank(inv_icm20948_handle _this, int _bank);
 
 
 enum ICM20948_RegMap {
@@ -201,10 +201,12 @@ enum AK09916_RegMap {
     AK09916_TS2 = 0x34, //DO NOT ACCESS
 };
 
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
+
 #endif //INV_XXX_ENABLE
+
 #endif //INV_IMU_INV_ICM20948_H
 
 
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif

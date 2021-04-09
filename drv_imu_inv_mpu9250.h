@@ -1,11 +1,13 @@
-﻿#if defined(__cplusplus) || defined(c_plusplus)
-extern "C"{
-#endif
+﻿
 
 #ifndef INV_IMU_INV_MPU9250_H
 #define INV_IMU_INV_MPU9250_H
-#include "inv_imu.h"
+#include "drv_imu_invensense.h"
 #if INV_MPU9250_ENABLE
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//extern "C"{
+//#endif
 
 typedef struct __inv_mpu9250 {
     inv_imu parents;
@@ -20,27 +22,27 @@ typedef struct __inv_mpu9250 {
 } inv_mpu9250, *inv_mpu9250_handle;
 
 
-void MPU9250_Destruct(inv_mpu9250_handle this) { _IMU_Destruct((void *) this); }
+inline void MPU9250_Destruct(inv_mpu9250_handle _this) { _IMU_Destruct((void *) _this); }
 inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint16_t _addr);
 inv_mpu9250_handle MPU9250_Construct2(inv_spi _spi);
 
 
-int MPU9250_Init(inv_mpu9250_handle this, inv_imu_config _cfg);
-bool MPU9250_Detect(inv_mpu9250_handle this);
-int MPU9250_SelfTest(inv_mpu9250_handle this);
-const char *MPU9250_Report(inv_mpu9250_handle this) { return "mpu9250"; }
-bool MPU9250_DataReady(inv_mpu9250_handle this);
-int MPU9250_EnableDataReadyInt(inv_mpu9250_handle this);
-int MPU9250_SoftReset(inv_mpu9250_handle this);
-int MPU9250_ReadSensorBlocking(inv_mpu9250_handle this);
-int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle this);
-int MPU9250_Convert(inv_mpu9250_handle this, float array[9]);
-int MPU9250_Convert2(inv_mpu9250_handle this, int16_t raw[9]);
-int MPU9250_Convert3(inv_mpu9250_handle this, float *temp);
+int MPU9250_Init(inv_mpu9250_handle _this, inv_imu_config _cfg);
+bool MPU9250_Detect(inv_mpu9250_handle _this);
+int MPU9250_SelfTest(inv_mpu9250_handle _this);
+inline const char *MPU9250_Report(inv_mpu9250_handle _this) { return "mpu9250"; }
+bool MPU9250_DataReady(inv_mpu9250_handle _this);
+int MPU9250_EnableDataReadyInt(inv_mpu9250_handle _this);
+int MPU9250_SoftReset(inv_mpu9250_handle _this);
+int MPU9250_ReadSensorBlocking(inv_mpu9250_handle _this);
+int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle _this);
+int MPU9250_Convert(inv_mpu9250_handle _this, float array[9]);
+int MPU9250_Convert2(inv_mpu9250_handle _this, int16_t raw[9]);
+int MPU9250_Convert3(inv_mpu9250_handle _this, float *temp);
 
 
-int MPU9250_SubI2cRead(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
-int MPU9250_SubI2cWrite(inv_mpu9250_handle this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
+int MPU9250_SubI2cRead(inv_mpu9250_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
+int MPU9250_SubI2cWrite(inv_mpu9250_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
 
 
 enum MPU9250_RegMap {
@@ -170,10 +172,13 @@ enum AK8963_RegMap {
     AK8963_ASAY = 0x11,
     AK8963_ASAZ = 0x12,
 };
+
+//#if defined(__cplusplus) || defined(c_plusplus)
+//}
+//#endif
+
 #endif //INV_XXX_ENABLE
 #endif //INV_IMU_INV_MPU9250_H
 
 
-#if defined(__cplusplus) || defined(c_plusplus)
-}
-#endif
+
