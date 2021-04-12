@@ -51,7 +51,7 @@ const uint16_t sSelfTestEquation[256] = {
         30903, 31212, 31524, 31839, 32157, 32479, 32804
 };
 
-inv_imu_vector_table icm20602_VectorTable =
+const inv_imu_vector_table icm20602_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
                 .Detect =(void *) ICM20602_Detect,

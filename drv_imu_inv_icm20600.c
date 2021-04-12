@@ -5,7 +5,7 @@
 //extern "C"{
 //#endif
 
-inv_imu_vector_table icm20600_VectorTable =
+const inv_imu_vector_table icm20600_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
                 .Detect =(void *) ICM20600_Detect,

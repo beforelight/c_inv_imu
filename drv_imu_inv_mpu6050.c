@@ -20,7 +20,7 @@ const uint16_t gyroSelfTestEquation[32] = {
         9214, 9638, 10081, 10545, 11030, 11537, 12068, 12623};
 
 
-inv_imu_vector_table mpu6050_VectorTable = {
+const inv_imu_vector_table mpu6050_VectorTable = {
         .Init = (void *) MPU6050_Init,
         .Detect =(void *) MPU6050_Detect,
         .SelfTest =(void *) MPU6050_SelfTest,
@@ -39,7 +39,10 @@ inv_imu_vector_table mpu6050_VectorTable = {
 
 inv_mpu6050_handle MPU6050_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
     inv_mpu6050_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu6050));
-    memset((void *) ((char *)rtv + sizeof(inv_mpu6050) - sizeof(inv_imu)), 0, sizeof(inv_mpu6050) - sizeof(inv_imu));
+    inv_imu buf = rtv->parents;
+    memset(rtv,0,sizeof(inv_mpu6050));
+   // memset((void *) ((char *)rtv + sizeof(inv_mpu6050) - sizeof(inv_imu)), 0, sizeof(inv_mpu6050) - sizeof(inv_imu));
+    rtv->parents = buf;
     rtv->parents.vtable = &mpu6050_VectorTable;
     return rtv;
 }

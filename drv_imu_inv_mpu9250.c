@@ -70,7 +70,7 @@ const unsigned int MPU9250_AK8963_OVERFLOW = (0x08);
 const unsigned int MPU9250_AK8963_CNTL2_SRST = 0x01;
 
 
-inv_imu_vector_table mpu9250_VectorTable =
+const inv_imu_vector_table mpu9250_VectorTable =
         {
                 .Init = (void *) MPU9250_Init,
                 .Detect =(void *) MPU9250_Detect,
@@ -88,7 +88,7 @@ inv_imu_vector_table mpu9250_VectorTable =
                 .Destruct = (void*) MPU9250_Destruct
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
-inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint8_t _addr) {
+inv_mpu9250_handle MPU9250_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
     inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;

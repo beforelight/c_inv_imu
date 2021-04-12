@@ -3,7 +3,7 @@
 #ifdef _C_INV_IMU_DEV_
 #include "drv_imu_invensense_port_template.h"
 #else
-#include "../drv_imu_invensense_port.h"
+#include "drv_imu_invensense_port.h"
 #endif
 #include<stdint.h>
 #include<stdbool.h>
