@@ -8,18 +8,18 @@
 //#endif
 
 typedef struct __inv_icm20600 {
-    inv_icm20602 parents;
-} inv_icm20600, *inv_icm20600_handle;
+    inv_icm20602_t parents;
+} inv_icm20600_t, *inv_icm20600_handle_t;
 
 
-inline void ICM20600_Destruct(inv_icm20600_handle _this) { ICM20602_Destruct((void *) _this); }
-inv_icm20600_handle ICM20600_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
-inv_icm20600_handle ICM20600_ConstructSPI(inv_spi _spi);
+inline void ICM20600_Destruct(inv_icm20600_handle_t _this) { ICM20602_Destruct((void *) _this); }
+inv_icm20600_handle_t ICM20600_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
+inv_icm20600_handle_t ICM20600_ConstructSPI(inv_spi_t _spi);
 
 
 
-bool ICM20600_Detect(inv_icm20602_handle _this);
-inline const char *ICM20600_Report(inv_icm20602_handle _this) { return " icm20600"; }
+bool ICM20600_Detect(inv_icm20602_handle_t _this);
+inline const char *ICM20600_Report(inv_icm20602_handle_t _this) { return " icm20600"; }
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //}

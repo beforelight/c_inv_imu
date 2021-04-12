@@ -10,7 +10,7 @@
 //#endif
 
 typedef struct __inv_mpu9250 {
-    inv_imu parents;
+    inv_imu_t parents;
     uint8_t *buf;
     uint8_t txbuf[23];
     uint8_t rxbuf[23];
@@ -19,30 +19,30 @@ typedef struct __inv_mpu9250 {
     uint8_t ak8963DeviceId;
     uint8_t ak8963Information;
     float ak8963Asa[3];
-} inv_mpu9250, *inv_mpu9250_handle;
+} inv_mpu9250_t, *inv_mpu9250_handle_t;
 
 
-inline void MPU9250_Destruct(inv_mpu9250_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu9250_handle MPU9250_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
-inv_mpu9250_handle MPU9250_ConstructSPI(inv_spi _spi);
+inline void MPU9250_Destruct(inv_mpu9250_handle_t _this) { _IMU_Destruct((void *) _this); }
+inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
+inv_mpu9250_handle_t MPU9250_ConstructSPI(inv_spi_t _spi);
 
 
-int MPU9250_Init(inv_mpu9250_handle _this, inv_imu_config _cfg);
-bool MPU9250_Detect(inv_mpu9250_handle _this);
-int MPU9250_SelfTest(inv_mpu9250_handle _this);
-inline const char *MPU9250_Report(inv_mpu9250_handle _this) { return "mpu9250"; }
-bool MPU9250_DataReady(inv_mpu9250_handle _this);
-int MPU9250_EnableDataReadyInt(inv_mpu9250_handle _this);
-int MPU9250_SoftReset(inv_mpu9250_handle _this);
-int MPU9250_ReadSensorBlocking(inv_mpu9250_handle _this);
-int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle _this);
-int MPU9250_Convert(inv_mpu9250_handle _this, float array[9]);
-int MPU9250_ConvertRaw(inv_mpu9250_handle _this, int16_t raw[9]);
-int MPU9250_ConvertTemp(inv_mpu9250_handle _this, float *temp);
+int MPU9250_Init(inv_mpu9250_handle_t _this, inv_imu_config_t _cfg);
+bool MPU9250_Detect(inv_mpu9250_handle_t _this);
+int MPU9250_SelfTest(inv_mpu9250_handle_t _this);
+inline const char *MPU9250_Report(inv_mpu9250_handle_t _this) { return "mpu9250"; }
+bool MPU9250_DataReady(inv_mpu9250_handle_t _this);
+int MPU9250_EnableDataReadyInt(inv_mpu9250_handle_t _this);
+int MPU9250_SoftReset(inv_mpu9250_handle_t _this);
+int MPU9250_ReadSensorBlocking(inv_mpu9250_handle_t _this);
+int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle_t _this);
+int MPU9250_Convert(inv_mpu9250_handle_t _this, float array[9]);
+int MPU9250_ConvertRaw(inv_mpu9250_handle_t _this, int16_t raw[9]);
+int MPU9250_ConvertTemp(inv_mpu9250_handle_t _this, float *temp);
 
 
-int MPU9250_SubI2cRead(inv_mpu9250_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
-int MPU9250_SubI2cWrite(inv_mpu9250_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
+int MPU9250_SubI2cRead(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
+int MPU9250_SubI2cWrite(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
 
 
 enum MPU9250_RegMap {

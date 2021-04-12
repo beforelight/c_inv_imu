@@ -30,7 +30,7 @@
 typedef enum __inv_i2c_direction {
     inv_i2c_direction_Write = 0U, /*!< Master transmit. */
     inv_i2c_direction_Read = 1U  /*!< Master receive. */
-} inv_i2c_direction;
+} inv_i2c_direction_t;
 
 typedef struct __inv_i2c_transfer {
     uint8_t slaveAddress;      /*!< 7-bit slave address. */
@@ -38,15 +38,15 @@ typedef struct __inv_i2c_transfer {
     uint32_t subAddress;        /*!< A sub address. Transferred MSB first. */
     void *volatile data;        /*!< A transfer buffer. */
     volatile uint32_t dataSize;          /*!< A transfer size. */
-    inv_i2c_direction direction; /*!< A transfer direction, read or write. */
+    inv_i2c_direction_t direction; /*!< A transfer direction, read or write. */
     /*******************************************************/
     //you like
-} inv_i2c_transfer;
+} inv_i2c_transfer_t;
 
 typedef struct __inv_i2c {
-    int (*masterTransferBlocking)(const inv_i2c_transfer *);
-    int (*masterTransferNonBlocking)(const inv_i2c_transfer *);
-} inv_i2c;
+    int (*masterTransferBlocking)(const inv_i2c_transfer_t *);
+    int (*masterTransferNonBlocking)(const inv_i2c_transfer_t *);
+} inv_i2c_t;
 
 typedef struct __inv_spi_transfer {
     uint8_t *volatile txData;          /*!< Send buffer. */
@@ -54,11 +54,11 @@ typedef struct __inv_spi_transfer {
     volatile uint32_t dataSize; /*!< Transfer bytes. */
     /*******************************************************/
     //you like
-} inv_spi_transfer;
+} inv_spi_transfer_t;
 
 typedef struct __inv_spi {
-    int (*masterTransferBlocking)(const inv_spi_transfer *);
-    int (*masterTransferNonBlocking)(const inv_spi_transfer *);
-} inv_spi;
+    int (*masterTransferBlocking)(const inv_spi_transfer_t *);
+    int (*masterTransferNonBlocking)(const inv_spi_transfer_t *);
+} inv_spi_t;
 
 #endif //INV_IMU_INV_CONF_H

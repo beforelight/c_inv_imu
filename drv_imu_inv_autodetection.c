@@ -14,7 +14,7 @@ return rtv;\
 IMU_Destruct(rtv);\
 };}
 
-inv_imu_handle IMU_AutoConstructI2C(inv_i2c _i2c, uint8_t _addr) {
+inv_imu_handle_t IMU_AutoConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     void *rtv = NULL;
 #if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
     IMU_AutoConstructI2CItem(MPU6050);
@@ -43,7 +43,7 @@ IMU_Destruct(rtv);\
 
 
 
-inv_imu_handle IMU_AutoConstructSPI(inv_spi _spi) {
+inv_imu_handle_t IMU_AutoConstructSPI(inv_spi_t _spi) {
     void *rtv = NULL;
 #if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
     IMU_AutoConstructSPIItem(MPU9250);

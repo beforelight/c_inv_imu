@@ -8,7 +8,7 @@
 //#endif
 
 typedef struct __inv_icm20948 {
-    inv_imu parents;
+    inv_imu_t parents;
     int bank;
     float gyroUnit;
     float accelUnit;
@@ -16,35 +16,35 @@ typedef struct __inv_icm20948 {
     uint8_t *buf;
     uint8_t txbuf[24];
     uint8_t rxbuf[24];
-} inv_icm20948, *inv_icm20948_handle;
+} inv_icm20948_t, *inv_icm20948_handle_t;
 
 
-inline void ICM20948_Destruct(inv_icm20948_handle _this) { _IMU_Destruct((void *) _this); }
-inv_icm20948_handle ICM20948_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
-inv_icm20948_handle ICM20948_ConstructSPI(inv_spi _spi);
+inline void ICM20948_Destruct(inv_icm20948_handle_t _this) { _IMU_Destruct((void *) _this); }
+inv_icm20948_handle_t ICM20948_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
+inv_icm20948_handle_t ICM20948_ConstructSPI(inv_spi_t _spi);
 
 
-int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg);
-bool ICM20948_Detect(inv_icm20948_handle _this);
-int ICM20948_SelfTest(inv_icm20948_handle _this);
-inline const char *ICM20948_Report(inv_icm20948_handle _this) { return " icm20948"; }
-bool ICM20948_DataReady(inv_icm20948_handle _this);
-int ICM20948_EnableDataReadyInt(inv_icm20948_handle _this);
-int ICM20948_SoftReset(inv_icm20948_handle _this);
-int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this);
-int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this);
-int ICM20948_Convert(inv_icm20948_handle _this, float array[9]);
-int ICM20948_ConvertRaw(inv_icm20948_handle _this, int16_t raw[9]);
-int ICM20948_ConvertTemp(inv_icm20948_handle _this, float *temp);
+int ICM20948_Init(inv_icm20948_handle_t _this, inv_imu_config_t _cfg);
+bool ICM20948_Detect(inv_icm20948_handle_t _this);
+int ICM20948_SelfTest(inv_icm20948_handle_t _this);
+inline const char *ICM20948_Report(inv_icm20948_handle_t _this) { return " icm20948"; }
+bool ICM20948_DataReady(inv_icm20948_handle_t _this);
+int ICM20948_EnableDataReadyInt(inv_icm20948_handle_t _this);
+int ICM20948_SoftReset(inv_icm20948_handle_t _this);
+int ICM20948_ReadSensorBlocking(inv_icm20948_handle_t _this);
+int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle_t _this);
+int ICM20948_Convert(inv_icm20948_handle_t _this, float array[9]);
+int ICM20948_ConvertRaw(inv_icm20948_handle_t _this, int16_t raw[9]);
+int ICM20948_ConvertTemp(inv_icm20948_handle_t _this, float *temp);
 
 
-int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
-int ICM20948_SubI2cWrite(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
-int ICM20948_WriteReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val);
-int ICM20948_WriteRegVerified(inv_icm20948_handle _this, uint16_t reg, const uint8_t val);
-int ICM20948_ReadReg(inv_icm20948_handle _this, uint16_t reg, uint8_t *val);
-int ICM20948_ModifyReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val, const uint8_t mask);
-int ICM20948_SwitchBank(inv_icm20948_handle _this, int _bank);
+int ICM20948_SubI2cRead(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
+int ICM20948_SubI2cWrite(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
+int ICM20948_WriteReg(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val);
+int ICM20948_WriteRegVerified(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val);
+int ICM20948_ReadReg(inv_icm20948_handle_t _this, uint16_t reg, uint8_t *val);
+int ICM20948_ModifyReg(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val, const uint8_t mask);
+int ICM20948_SwitchBank(inv_icm20948_handle_t _this, int _bank);
 
 
 enum ICM20948_RegMap {

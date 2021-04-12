@@ -10,28 +10,28 @@
 //#endif
 
 typedef struct __inv_mpu6050 {
-    inv_imu parents;
+    inv_imu_t parents;
     float gyroUnit;
     float accelUnit;
     uint8_t buf[14];
-} inv_mpu6050, *inv_mpu6050_handle;
+} inv_mpu6050_t, *inv_mpu6050_handle_t;
 
 
-inline void MPU6050_Destruct(inv_mpu6050_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu6050_handle MPU6050_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inline void MPU6050_Destruct(inv_mpu6050_handle_t _this) { _IMU_Destruct((void *) _this); }
+inv_mpu6050_handle_t MPU6050_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 
-int MPU6050_Init(inv_mpu6050_handle _this, inv_imu_config _cfg);
-bool MPU6050_Detect(inv_mpu6050_handle _this);
-int MPU6050_SelfTest(inv_mpu6050_handle _this);
-inline const char *MPU6050_Report(inv_mpu6050_handle _this) { return "mpu6050"; }
-bool MPU6050_DataReady(inv_mpu6050_handle _this);
-int MPU6050_EnableDataReadyInt(inv_mpu6050_handle _this);
-int MPU6050_SoftReset(inv_mpu6050_handle _this);
-int MPU6050_ReadSensorBlocking(inv_mpu6050_handle _this);
-int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle _this);
-int MPU6050_Convert(inv_mpu6050_handle _this, float array[9]);
-int MPU6050_ConvertRaw(inv_mpu6050_handle _this, int16_t raw[9]);
-int MPU6050_ConvertTemp(inv_mpu6050_handle _this, float *temp);
+int MPU6050_Init(inv_mpu6050_handle_t _this, inv_imu_config_t _cfg);
+bool MPU6050_Detect(inv_mpu6050_handle_t _this);
+int MPU6050_SelfTest(inv_mpu6050_handle_t _this);
+inline const char *MPU6050_Report(inv_mpu6050_handle_t _this) { return "mpu6050"; }
+bool MPU6050_DataReady(inv_mpu6050_handle_t _this);
+int MPU6050_EnableDataReadyInt(inv_mpu6050_handle_t _this);
+int MPU6050_SoftReset(inv_mpu6050_handle_t _this);
+int MPU6050_ReadSensorBlocking(inv_mpu6050_handle_t _this);
+int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle_t _this);
+int MPU6050_Convert(inv_mpu6050_handle_t _this, float array[9]);
+int MPU6050_ConvertRaw(inv_mpu6050_handle_t _this, int16_t raw[9]);
+int MPU6050_ConvertTemp(inv_mpu6050_handle_t _this, float *temp);
 
 
 enum MPU6050_RegMap {

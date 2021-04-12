@@ -54,7 +54,7 @@ const uint16_t sSelfTestEquation[256] = {
 };
 
 
-const inv_imu_vector_table icm20948_VectorTable =
+const inv_imu_vector_table_t icm20948_VectorTable =
         {
                 .Init = (void *) ICM20948_Init,
                 .Detect =(void *) ICM20948_Detect,
@@ -73,23 +73,23 @@ const inv_imu_vector_table icm20948_VectorTable =
         };
 
 
-inv_icm20948_handle ICM20948_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
-    inv_icm20948_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20948));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20948) - sizeof(inv_imu)), 0, sizeof(inv_icm20948) - sizeof(inv_imu));
+inv_icm20948_handle_t ICM20948_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
+    inv_icm20948_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20948_t));
+    memset((void *) ((char *) rtv + sizeof(inv_icm20948_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20948_t) - sizeof(inv_imu_t));
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     rtv->bank = INT32_MAX;//确保一开始就切换bank
     return rtv;
 }
-inv_icm20948_handle ICM20948_ConstructSPI(inv_spi _spi) {
-    inv_icm20948_handle rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20948));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20948) - sizeof(inv_imu)), 0, sizeof(inv_icm20948) - sizeof(inv_imu));
+inv_icm20948_handle_t ICM20948_ConstructSPI(inv_spi_t _spi) {
+    inv_icm20948_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20948_t));
+    memset((void *) ((char *) rtv + sizeof(inv_icm20948_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20948_t) - sizeof(inv_imu_t));
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     rtv->bank = INT32_MAX;//确保一开始就切换bank
     return rtv;
 }
-int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg) {
+int ICM20948_Init(inv_icm20948_handle_t _this, inv_imu_config_t _cfg) {
     _this->parents.cfg = _cfg;
     _this->parents.isOpen = false;
     int res = 0;
@@ -98,9 +98,9 @@ int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg) {
     float unit;
     float unit_from;
 
-    if (!IMU_Detect((inv_imu_handle) _this)) { return -1; }
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     //软复位
-    res |= IMU_SoftReset((inv_imu_handle) _this);
+    res |= IMU_SoftReset((inv_imu_handle_t) _this);
 
     //打开所有传感器
     res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_PWR_MGMT_2, 0);
@@ -138,7 +138,7 @@ int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg) {
     res |= ICM20948_WriteRegVerified(_this, (uint16_t) ICM20948_TEMP_CONFIG, 6); //8hz
 
     //开启数据更新中断
-    res |= IMU_EnableDataReadyInt((inv_imu_handle) _this);
+    res |= IMU_EnableDataReadyInt((inv_imu_handle_t) _this);
 
     if (res != 0) { return res; }
     _this->parents.isOpen = false;
@@ -189,7 +189,7 @@ int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg) {
         return res;
     }
 }
-bool ICM20948_Detect(inv_icm20948_handle _this) {
+bool ICM20948_Detect(inv_icm20948_handle_t _this) {
     uint8_t val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; };
     ICM20948_SwitchBank(_this, 0);
@@ -206,17 +206,17 @@ bool ICM20948_Detect(inv_icm20948_handle _this) {
     }
     return false;
 }
-int ICM20948_SelfTest(inv_icm20948_handle _this) {
-    if (!IMU_IsOpen((inv_imu_handle) _this)) { return -1; }
+int ICM20948_SelfTest(inv_icm20948_handle_t _this) {
+    if (!IMU_IsOpen((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
-    inv_imu_config backup_cfg = _this->parents.cfg;
-    inv_imu_config st_cfg = IMU_ConfigDefault();
+    inv_imu_config_t backup_cfg = _this->parents.cfg;
+    inv_imu_config_t st_cfg = IMU_ConfigDefault();
     st_cfg.gyroFullScale = MPU_FS_250dps;
     st_cfg.accelFullScale = MPU_FS_2G;
     st_cfg.accelBandwidth = MPU_ABW_99;
     st_cfg.gyroBandwidth = MPU_GBW_92;
-    if (0 != IMU_Init((inv_imu_handle) _this, st_cfg)) {
-        IMU_Init((inv_imu_handle) _this, backup_cfg);
+    if (0 != IMU_Init((inv_imu_handle_t) _this, st_cfg)) {
+        IMU_Init((inv_imu_handle_t) _this, backup_cfg);
         return -1;
     }
     int32_t gyro_bias_st[3], gyro_bias_regular[3];
@@ -233,12 +233,12 @@ int ICM20948_SelfTest(inv_icm20948_handle _this) {
 
     int times;
     times = 50;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 50;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) _this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
@@ -250,12 +250,12 @@ int ICM20948_SelfTest(inv_icm20948_handle _this) {
     res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_ACCEL_CONFIG_2, 0b111 << 3, 0b111 << 3);
 
     times = 50;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 50;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) _this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -334,21 +334,21 @@ int ICM20948_SelfTest(inv_icm20948_handle _this) {
     }
 
     //恢复原来的配置
-    res |= IMU_Init((inv_imu_handle) _this, backup_cfg);
+    res |= IMU_Init((inv_imu_handle_t) _this, backup_cfg);
     return res | (gyro_result << 1) | accel_result;
 }
-bool ICM20948_DataReady(inv_icm20948_handle _this) {
+bool ICM20948_DataReady(inv_icm20948_handle_t _this) {
     uint8_t val = 0;
     ICM20948_ReadReg(_this, (uint16_t) ICM20948_INT_STATUS_1, &val);
     return (val & 0x01) == 0x01;
 }
-int ICM20948_EnableDataReadyInt(inv_icm20948_handle _this) {
+int ICM20948_EnableDataReadyInt(inv_icm20948_handle_t _this) {
     return ICM20948_ModifyReg(_this, (uint16_t) ICM20948_INT_ENABLE_1, 0x01, 0x01);
 }
-int ICM20948_SoftReset(inv_icm20948_handle _this) {
+int ICM20948_SoftReset(inv_icm20948_handle_t _this) {
     return 0;
 }
-int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this) {
+int ICM20948_ReadSensorBlocking(inv_icm20948_handle_t _this) {
     if (_this->bank != 0) {
         ICM20948_SwitchBank(_this, 0);
     }
@@ -374,7 +374,7 @@ int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this) {
     }
     return res;
 }
-int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this) {
+int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle_t _this) {
     if (_this->bank != 0) {
         ICM20948_SwitchBank(_this, 0);
     }
@@ -400,7 +400,7 @@ int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this) {
     }
     return res;
 }
-int ICM20948_Convert(inv_icm20948_handle _this, float *array) {
+int ICM20948_Convert(inv_icm20948_handle_t _this, float *array) {
     uint8_t *buf = _this->buf;
     array[0] = _this->accelUnit * ((int16_t) ((buf[0] << 8) | buf[1]));
     array[1] = _this->accelUnit * ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -423,7 +423,7 @@ int ICM20948_Convert(inv_icm20948_handle _this, float *array) {
     array[8] = magUnit * ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int ICM20948_ConvertRaw(inv_icm20948_handle _this, int16_t *raw) {
+int ICM20948_ConvertRaw(inv_icm20948_handle_t _this, int16_t *raw) {
     uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -446,11 +446,11 @@ int ICM20948_ConvertRaw(inv_icm20948_handle _this, int16_t *raw) {
     raw[8] = ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int ICM20948_ConvertTemp(inv_icm20948_handle _this, float *temp) {
+int ICM20948_ConvertTemp(inv_icm20948_handle_t _this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) ((_this->buf[12] << 8) | _this->buf[13])) / 333.87f + 21; }
     return 0;
 }
-int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len) {
+int ICM20948_SubI2cRead(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len) {
     uint8_t index = 0;
     uint8_t status = 0;
     uint32_t timeout = 0;
@@ -479,7 +479,7 @@ int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, ui
     }
     return res;
 }
-int ICM20948_SubI2cWrite(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len) {
+int ICM20948_SubI2cWrite(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len) {
     uint32_t timeout = 0;
     uint8_t status = 0;
     uint8_t tmp = 0;
@@ -509,33 +509,33 @@ int ICM20948_SubI2cWrite(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, c
     }
     return res;
 }
-int ICM20948_WriteReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val) {
+int ICM20948_WriteReg(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val) {
     if (_this->bank != reg >> 8) {
         ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_WriteReg((inv_imu_handle) _this, reg, val);
+    return IMU_WriteReg((inv_imu_handle_t) _this, reg, val);
 }
-int ICM20948_WriteRegVerified(inv_icm20948_handle _this, uint16_t reg, const uint8_t val) {
+int ICM20948_WriteRegVerified(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val) {
     if (_this->bank != reg >> 8) {
         ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_WriteRegVerified((inv_imu_handle) _this, reg, val);
+    return IMU_WriteRegVerified((inv_imu_handle_t) _this, reg, val);
 }
-int ICM20948_ReadReg(inv_icm20948_handle _this, uint16_t reg, uint8_t *val) {
+int ICM20948_ReadReg(inv_icm20948_handle_t _this, uint16_t reg, uint8_t *val) {
     if (_this->bank != reg >> 8) {
         ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_ReadReg((inv_imu_handle) _this, reg, val);
+    return IMU_ReadReg((inv_imu_handle_t) _this, reg, val);
 }
-int ICM20948_ModifyReg(inv_icm20948_handle _this, uint16_t reg, const uint8_t val, const uint8_t mask) {
+int ICM20948_ModifyReg(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val, const uint8_t mask) {
     if (_this->bank != reg >> 8) {
         ICM20948_SwitchBank(_this, reg >> 8);
     }
-    return IMU_ModifyReg((inv_imu_handle) _this, reg, val, mask);
+    return IMU_ModifyReg((inv_imu_handle_t) _this, reg, val, mask);
 }
-int ICM20948_SwitchBank(inv_icm20948_handle _this, int _bank) {
+int ICM20948_SwitchBank(inv_icm20948_handle_t _this, int _bank) {
     _this->bank = _bank;
-    return IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
+    return IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
 }
 
 //#if defined(__cplusplus) || defined(c_plusplus)

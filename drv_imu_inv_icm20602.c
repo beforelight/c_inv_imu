@@ -51,7 +51,7 @@ const uint16_t sSelfTestEquation[256] = {
         30903, 31212, 31524, 31839, 32157, 32479, 32804
 };
 
-const inv_imu_vector_table icm20602_VectorTable =
+const inv_imu_vector_table_t icm20602_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
                 .Detect =(void *) ICM20602_Detect,
@@ -70,21 +70,21 @@ const inv_imu_vector_table icm20602_VectorTable =
         };
 
 
-inv_icm20602_handle ICM20602_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
-    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20602));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
+inv_icm20602_handle_t ICM20602_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
+    inv_icm20602_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20602_t));
+    memset((void *) ((char *) rtv + sizeof(inv_icm20602_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20602_t) - sizeof(inv_imu_t));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
-inv_icm20602_handle ICM20602_ConstructSPI(inv_spi _spi) {
-    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20602));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
+inv_icm20602_handle_t ICM20602_ConstructSPI(inv_spi_t _spi) {
+    inv_icm20602_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20602_t));
+    memset((void *) ((char *) rtv + sizeof(inv_icm20602_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20602_t) - sizeof(inv_imu_t));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
-int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg) {
+int ICM20602_Init(inv_icm20602_handle_t _this, inv_imu_config_t _cfg) {
     _this->parents.cfg = _cfg;
     _this->parents.isOpen = false;
     int res = 0;
@@ -92,19 +92,19 @@ int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg) {
     int fs;
     float unit;
     float unit_from;
-    if (!IMU_Detect((inv_imu_handle) _this)) { return -1; }
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     //软复位
-    res |= IMU_SoftReset((inv_imu_handle) _this);
+    res |= IMU_SoftReset((inv_imu_handle_t) _this);
 
     //打开所有传感器
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_2, 0);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_2, 0);
 
     //1khz采样率
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_SMPLRT_DIV, 0);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_SMPLRT_DIV, 0);
 
     //配置陀螺仪lpf
     _InvGetMapVal(ICM20602_GBW_MAP, _this->parents.cfg.gyroBandwidth, bw);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_CONFIG, bw);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_CONFIG, bw);
 
     //配置陀螺仪量程和单位
     _InvGetMapVal(mpu_gyro_unit_dps_map, _this->parents.cfg.gyroFullScale, unit);
@@ -112,7 +112,7 @@ int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg) {
     _this->gyroUnit = unit * unit_from;
 
     _InvGetMapVal(mpu_gyro_fs_map, _this->parents.cfg.gyroFullScale, fs);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_GYRO_CONFIG, fs << 3u);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_GYRO_CONFIG, fs << 3u);
 
     //配置加速度计量程和单位
     _InvGetMapVal(mpu_accel_unit_G_map, _this->parents.cfg.accelFullScale, unit);
@@ -120,46 +120,46 @@ int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg) {
     _this->accelUnit = unit * unit_from;
 
     _InvGetMapVal(mpu_accel_fs_map, _this->parents.cfg.accelFullScale, fs);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_ACCEL_CONFIG, fs << 3u);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_ACCEL_CONFIG, fs << 3u);
 
     //配置加速度计lpf
     _InvGetMapVal(ICM20602_ABW_MAP, _this->parents.cfg.accelBandwidth, bw);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_ACCEL_CONFIG2, bw);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_ACCEL_CONFIG2, bw);
 
     //开启数据更新中断
-    res |= IMU_EnableDataReadyInt((inv_imu_handle) _this);
+    res |= IMU_EnableDataReadyInt((inv_imu_handle_t) _this);
 
     if (res == 0) {
         _this->parents.isOpen = true;
     }
     return res;
 }
-bool ICM20602_Detect(inv_icm20602_handle _this) {
+bool ICM20602_Detect(inv_icm20602_handle_t _this) {
     uint8_t val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; }
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x12 == val) {
         return true;
     }
     val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x69; }
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x12 == val) {
         return true;
     }
     return false;
 }
-int ICM20602_SelfTest(inv_icm20602_handle _this) {
-    if (!IMU_IsOpen((inv_imu_handle) _this)) { return -1; }
+int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
+    if (!IMU_IsOpen((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
-    inv_imu_config backup_cfg = _this->parents.cfg;
-    inv_imu_config st_cfg = IMU_ConfigDefault();
+    inv_imu_config_t backup_cfg = _this->parents.cfg;
+    inv_imu_config_t st_cfg = IMU_ConfigDefault();
     st_cfg.gyroFullScale = MPU_FS_250dps;
     st_cfg.accelFullScale = MPU_FS_2G;
     st_cfg.accelBandwidth = MPU_ABW_99;
     st_cfg.gyroBandwidth = MPU_GBW_92;
-    if (0 != IMU_Init((inv_imu_handle) _this, st_cfg)) {
-        IMU_Init((inv_imu_handle) _this, backup_cfg);
+    if (0 != IMU_Init((inv_imu_handle_t) _this, st_cfg)) {
+        IMU_Init((inv_imu_handle_t) _this, backup_cfg);
         return -1;
     }
     int32_t gyro_bias_st[3], gyro_bias_regular[3];
@@ -176,29 +176,29 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
 
     int times;
     times = 20;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 20;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) _this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
         }
     }
 
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_GYRO_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_GYRO_CONFIG, val | (0b111 << 5));//打开陀螺仪自检
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_ACCEL_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_ACCEL_CONFIG, val | (0b111 << 5));//打开加速度计自检
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_GYRO_CONFIG, &val);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_GYRO_CONFIG, val | (0b111 << 5));//打开陀螺仪自检
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_ACCEL_CONFIG, &val);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_ACCEL_CONFIG, val | (0b111 << 5));//打开加速度计自检
     times = 20;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle) _this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 20;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle) _this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -219,9 +219,9 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
     int st_shift_prod[3], st_shift_cust[3], st_shift_ratio[3], i;
 //    int result;
 
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_X_ACCEL, regs);
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_Y_ACCEL, regs + 1);
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_Z_ACCEL, regs + 2);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_X_ACCEL, regs);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_Y_ACCEL, regs + 1);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_Z_ACCEL, regs + 2);
     for (i = 0; i < 3; i++) {
         if (regs[i] != 0) {
             st_shift_prod[i] = sSelfTestEquation[regs[i] - 1];
@@ -264,9 +264,9 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
     }
 
     //计算陀螺仪自检结果
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_X_GYRO, regs);
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_Y_GYRO, regs + 1);
-    res |= IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_SELF_TEST_Z_GYRO, regs + 2);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_X_GYRO, regs);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_Y_GYRO, regs + 1);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_SELF_TEST_Z_GYRO, regs + 2);
     for (i = 0; i < 3; i++) {
         if (regs[i] != 0) {
             st_shift_prod[i] = sSelfTestEquation[regs[i] - 1];
@@ -320,40 +320,40 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
     }
 
     //恢复原来的配置
-    res |= IMU_Init((inv_imu_handle) _this, backup_cfg);
+    res |= IMU_Init((inv_imu_handle_t) _this, backup_cfg);
     return res | (gyro_result << 1) | accel_result;
 }
-bool ICM20602_DataReady(inv_icm20602_handle _this) {
+bool ICM20602_DataReady(inv_icm20602_handle_t _this) {
     uint8_t val = 0;
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_INT_STATUS, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_INT_STATUS, &val);
     return (val & 0x01) == 0x01;
 }
-int ICM20602_EnableDataReadyInt(inv_icm20602_handle _this) {
-    return IMU_ModifyReg((inv_imu_handle) _this, (uint8_t) ICM20602_INT_ENABLE, 0x01, 0x01);
+int ICM20602_EnableDataReadyInt(inv_icm20602_handle_t _this) {
+    return IMU_ModifyReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_INT_ENABLE, 0x01, 0x01);
 }
-int ICM20602_SoftReset(inv_icm20602_handle _this) {
-    if (!IMU_Detect((inv_imu_handle) _this)) { return -1; }
+int ICM20602_SoftReset(inv_icm20602_handle_t _this) {
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
     uint8_t val;
     //复位
-    res |= IMU_WriteReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x80);
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x80);
     //等待复位成功
     do {
-        IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+        IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
         INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x41", val);
     } while (val != 0x41);
 
     //唤起睡眠
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x1);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x1);
 
     return res;
 }
-int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this) {
+int ICM20602_ReadSensorBlocking(inv_icm20602_handle_t _this) {
     int res;
     if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20602_ACCEL_XOUT_H;
@@ -376,7 +376,7 @@ int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this) {
     }
     return res;
 }
-int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this) {
+int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle_t _this) {
     int res;
     if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20602_ACCEL_XOUT_H;
@@ -399,7 +399,7 @@ int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this) {
     }
     return res;
 }
-int ICM20602_Convert(inv_icm20602_handle _this, float *array) {
+int ICM20602_Convert(inv_icm20602_handle_t _this, float *array) {
     uint8_t *buf = _this->buf;
     array[0] = _this->accelUnit * ((int16_t) ((buf[0] << 8) | buf[1]));
     array[1] = _this->accelUnit * ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -409,7 +409,7 @@ int ICM20602_Convert(inv_icm20602_handle _this, float *array) {
     array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int ICM20602_ConvertRaw(inv_icm20602_handle _this, int16_t *raw) {
+int ICM20602_ConvertRaw(inv_icm20602_handle_t _this, int16_t *raw) {
     uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -419,7 +419,7 @@ int ICM20602_ConvertRaw(inv_icm20602_handle _this, int16_t *raw) {
     raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int ICM20602_ConvertTemp(inv_icm20602_handle _this, float *temp) {
+int ICM20602_ConvertTemp(inv_icm20602_handle_t _this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) (_this->buf[6] << 8) | _this->buf[7]) / 326.8f + 25.0f; }
     return 0;
 }

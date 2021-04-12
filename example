@@ -1,11 +1,11 @@
 ﻿#include"drv_imu_invensense.h"
 int INV_IMU_example(int argn, char **argv) {
-    inv_i2c i2c0;
+    inv_i2c_t i2c0;
     //i2c0 = ....
     //or
     //i2c0 spi0;
     //spi0 = .....
-    inv_imu_handle imu0 = IMU_AutoConstructI2C(i2c0, IMU_SlaveAddressAutoDetect);
+    inv_imu_handle_t imu0 = IMU_AutoConstructI2C(i2c0, IMU_SlaveAddressAutoDetect);
     //or inv_imu_handle imu0 = IMU_AutoConstructSPI(spi0);
     if (imu0 != NULL) {
         INV_INFO("当前使用的传感器为 %s", IMU_Report(imu0));
@@ -35,12 +35,12 @@ int INV_IMU_example(int argn, char **argv) {
 
 #include"drv_imu_inv_mpu6050.h"
 int INV_MPU6050_example(int argn, char **argv) {
-    inv_i2c i2c0;
+    inv_i2c_t i2c0;
     //i2c0 = ....
     //or
     //i2c0 spi0;
     //spi0 = .....
-    inv_mpu6050_handle imu0 = MPU6050_ConstructI2C(i2c0, IMU_SlaveAddressAutoDetect);
+    inv_mpu6050_handle_t imu0 = MPU6050_ConstructI2C(i2c0, IMU_SlaveAddressAutoDetect);
     //or inv_mpu9250_handle imu0 = MPU9250_ConstructSPI(spi0);
     if (imu0 != NULL) {
         INV_INFO("当前使用的传感器为 %s", MPU6050_Report(imu0));

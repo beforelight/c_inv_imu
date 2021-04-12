@@ -5,7 +5,7 @@
 //extern "C"{
 //#endif
 
-const inv_imu_vector_table icm20600_VectorTable =
+const inv_imu_vector_table_t icm20600_VectorTable =
         {
                 .Init = (void *) ICM20602_Init,
                 .Detect =(void *) ICM20600_Detect,
@@ -23,26 +23,26 @@ const inv_imu_vector_table icm20600_VectorTable =
                 .Destruct = (void*) ICM20600_Destruct,
         };
 
-inv_icm20600_handle ICM20600_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
-    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_ConstructI2C(_i2c, _addr);
+inv_icm20600_handle_t ICM20600_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
+    inv_icm20600_handle_t rtv = (inv_icm20600_handle_t) ICM20602_ConstructI2C(_i2c, _addr);
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;
 }
-inv_icm20600_handle ICM20600_ConstructSPI(inv_spi _spi) {
-    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_ConstructSPI(_spi);
+inv_icm20600_handle_t ICM20600_ConstructSPI(inv_spi_t _spi) {
+    inv_icm20600_handle_t rtv = (inv_icm20600_handle_t) ICM20602_ConstructSPI(_spi);
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;
 }
-bool ICM20600_Detect(inv_icm20602_handle _this) {
+bool ICM20600_Detect(inv_icm20602_handle_t _this) {
     uint8_t val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; }
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x11 == val) {
         return true;
     }
     val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x69; }
-    IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_WHO_AM_I, &val);
     if (0x11 == val) {
         return true;
     }

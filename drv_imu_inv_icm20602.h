@@ -7,32 +7,32 @@
 //#endif
 
 typedef struct __inv_icm20602 {
-    inv_imu parents;
+    inv_imu_t parents;
     float gyroUnit;
     float accelUnit;
     uint8_t *buf;
     uint8_t txbuf[15];
     uint8_t rxbuf[15];
-} inv_icm20602, *inv_icm20602_handle;
+} inv_icm20602_t, *inv_icm20602_handle_t;
 
 
-inline void ICM20602_Destruct(inv_icm20602_handle _this) { _IMU_Destruct((void *) _this); }
-inv_icm20602_handle ICM20602_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
-inv_icm20602_handle ICM20602_ConstructSPI(inv_spi _spi);
+inline void ICM20602_Destruct(inv_icm20602_handle_t _this) { _IMU_Destruct((void *) _this); }
+inv_icm20602_handle_t ICM20602_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
+inv_icm20602_handle_t ICM20602_ConstructSPI(inv_spi_t _spi);
 
 
-int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg);
-bool ICM20602_Detect(inv_icm20602_handle _this);
-int ICM20602_SelfTest(inv_icm20602_handle _this);
-inline const char *ICM20602_Report(inv_icm20602_handle _this) { return " icm20602"; }
-bool ICM20602_DataReady(inv_icm20602_handle _this);
-int ICM20602_EnableDataReadyInt(inv_icm20602_handle _this);
-int ICM20602_SoftReset(inv_icm20602_handle _this);
-int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this);
-int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this);
-int ICM20602_Convert(inv_icm20602_handle _this, float array[9]);
-int ICM20602_ConvertRaw(inv_icm20602_handle _this, int16_t raw[9]);
-int ICM20602_ConvertTemp(inv_icm20602_handle _this, float *temp);
+int ICM20602_Init(inv_icm20602_handle_t _this, inv_imu_config_t _cfg);
+bool ICM20602_Detect(inv_icm20602_handle_t _this);
+int ICM20602_SelfTest(inv_icm20602_handle_t _this);
+inline const char *ICM20602_Report(inv_icm20602_handle_t _this) { return " icm20602"; }
+bool ICM20602_DataReady(inv_icm20602_handle_t _this);
+int ICM20602_EnableDataReadyInt(inv_icm20602_handle_t _this);
+int ICM20602_SoftReset(inv_icm20602_handle_t _this);
+int ICM20602_ReadSensorBlocking(inv_icm20602_handle_t _this);
+int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle_t _this);
+int ICM20602_Convert(inv_icm20602_handle_t _this, float array[9]);
+int ICM20602_ConvertRaw(inv_icm20602_handle_t _this, int16_t raw[9]);
+int ICM20602_ConvertTemp(inv_icm20602_handle_t _this, float *temp);
 
 
 enum ICM20602_RegMap {
