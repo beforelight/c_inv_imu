@@ -39,11 +39,12 @@ const inv_imu_vector_table_t mpu6050_VectorTable = {
 };
 
 inv_mpu6050_handle_t MPU6050_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
-    inv_mpu6050_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu6050_t));
-    inv_imu_t buf = rtv->parents;
-    memset(rtv,0,sizeof(inv_mpu6050_t));
-   // memset((void *) ((char *)rtv + sizeof(inv_mpu6050) - sizeof(inv_imu)), 0, sizeof(inv_mpu6050) - sizeof(inv_imu));
-    rtv->parents = buf;
+    inv_mpu6050_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu6050_t ));
+    inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
+    memset(rtv, 0, sizeof(inv_mpu6050_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &mpu6050_VectorTable;
     return rtv;
 }

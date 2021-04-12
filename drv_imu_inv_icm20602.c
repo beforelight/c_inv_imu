@@ -1,5 +1,5 @@
 ﻿#include "drv_imu_inv_icm20602.h"
-#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
+#if defined(INV_ICM20602_ENABLE) && (INV_ICM20602_ENABLE > 0U)
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
@@ -66,20 +66,28 @@ const inv_imu_vector_table_t icm20602_VectorTable =
                 .ConvertRaw =(void *) ICM20602_ConvertRaw,
                 .ConvertTemp =(void *) ICM20602_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void*) ICM20602_Destruct
+                .Destruct = (void *) ICM20602_Destruct
         };
 
 
 inv_icm20602_handle_t ICM20602_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
-    inv_icm20602_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20602_t));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20602_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20602_t) - sizeof(inv_imu_t));
+    inv_icm20602_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_icm20602_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
+    memset(rtv, 0, sizeof(inv_icm20602_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
 inv_icm20602_handle_t ICM20602_ConstructSPI(inv_spi_t _spi) {
-    inv_icm20602_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20602_t));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20602_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20602_t) - sizeof(inv_imu_t));
+    inv_icm20602_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_icm20602_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructSPI(_spi);
+    memset(rtv, 0, sizeof(inv_icm20602_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;

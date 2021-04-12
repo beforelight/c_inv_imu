@@ -11,11 +11,10 @@
 #include<float.h>
 
 //处理未定义宏定义
-#if !defined(INV_MALLOC) || !defined(INV_FREE) || !defined(INV_REALLOC)
+#if !defined(INV_MALLOC) || !defined(INV_FREE)
 #include<stdlib.h>
 #define INV_MALLOC malloc
 #define INV_FREE free
-#define INV_REALLOC realloc
 #endif
 
 #ifndef INV_ASSERT
@@ -136,8 +135,8 @@ static inline void IMU_Destruct(inv_imu_handle_t _this) { return _this->vtable->
 
 const int IMU_SlaveAddressAutoDetect = 0;
 void _IMU_Destruct(inv_imu_handle_t _this);
-inv_imu_handle_t IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
-inv_imu_handle_t IMU_ConstructSPI(inv_spi_t _spi);
+inv_imu_handle_t _IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
+inv_imu_handle_t _IMU_ConstructSPI(inv_spi_t _spi);
 int IMU_WriteReg(inv_imu_handle_t _this, uint8_t reg, uint8_t val);
 int IMU_WriteRegVerified(inv_imu_handle_t _this, uint8_t reg, uint8_t val);
 int IMU_ReadReg(inv_imu_handle_t _this, uint8_t reg, uint8_t *val);

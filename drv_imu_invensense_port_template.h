@@ -13,7 +13,6 @@
 
 #define INV_MALLOC malloc
 #define INV_FREE free
-#define INV_REALLOC realloc
 
 //设置log接口，注意接口函数是带换行符的printf
 #include<stdio.h>

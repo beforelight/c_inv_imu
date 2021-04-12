@@ -90,15 +90,23 @@ const inv_imu_vector_table_t mpu9250_VectorTable =
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
-    inv_mpu9250_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu9250_t));
-    memset((void *) ((char *) rtv + sizeof(inv_mpu9250_t) - sizeof(inv_imu_t)), 0, sizeof(inv_mpu9250_t) - sizeof(inv_imu_t));
-    rtv->parents.vtable = &mpu9250_VectorTable;
+    inv_mpu9250_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu9250_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
+    memset(rtv, 0, sizeof(inv_mpu9250_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
+   rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
 inv_mpu9250_handle_t MPU9250_ConstructSPI(inv_spi_t _spi) {
-    inv_mpu9250_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_mpu9250_t));
-    memset((void *) ((char *) rtv + sizeof(inv_mpu9250_t) - sizeof(inv_imu_t)), 0, sizeof(inv_mpu9250_t) - sizeof(inv_imu_t));
+    inv_mpu9250_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu9250_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructSPI(_spi);
+    memset(rtv, 0, sizeof(inv_mpu9250_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;

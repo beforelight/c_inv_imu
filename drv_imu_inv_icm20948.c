@@ -74,16 +74,24 @@ const inv_imu_vector_table_t icm20948_VectorTable =
 
 
 inv_icm20948_handle_t ICM20948_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
-    inv_icm20948_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20948_t));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20948_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20948_t) - sizeof(inv_imu_t));
+    inv_icm20948_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_icm20948_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
+    memset(rtv, 0, sizeof(inv_icm20948_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     rtv->bank = INT32_MAX;//确保一开始就切换bank
     return rtv;
 }
 inv_icm20948_handle_t ICM20948_ConstructSPI(inv_spi_t _spi) {
-    inv_icm20948_handle_t rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20948_t));
-    memset((void *) ((char *) rtv + sizeof(inv_icm20948_t) - sizeof(inv_imu_t)), 0, sizeof(inv_icm20948_t) - sizeof(inv_imu_t));
+    inv_icm20948_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_icm20948_t));
+    inv_imu_handle_t p2parent = _IMU_ConstructSPI(_spi);
+    memset(rtv, 0, sizeof(inv_icm20948_t));
+    rtv->parents = *p2parent;
+    _IMU_Destruct(p2parent);
+
     rtv->parents.vtable = &icm20948_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     rtv->bank = INT32_MAX;//确保一开始就切换bank
