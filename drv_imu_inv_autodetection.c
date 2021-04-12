@@ -14,7 +14,7 @@ return rtv;\
 IMU_Destruct(rtv);\
 };}
 
-inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint16_t _addr) {
+inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint8_t _addr) {
     void *rtv = NULL;
 #if INV_MPU6050_ENABLE
     IMU_AutoConstructItem(MPU6050);

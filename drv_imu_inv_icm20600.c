@@ -23,7 +23,7 @@ inv_imu_vector_table icm20600_VectorTable =
                 .Destruct = (void*) ICM20600_Destruct,
         };
 
-inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint16_t _addr) {
+inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint8_t _addr) {
     inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_Construct(_i2c, _addr);
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;

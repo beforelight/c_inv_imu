@@ -88,7 +88,7 @@ inv_imu_vector_table mpu9250_VectorTable =
                 .Destruct = (void*) MPU9250_Destruct
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
-inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint16_t _addr) {
+inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint8_t _addr) {
     inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;
@@ -435,7 +435,7 @@ int MPU9250_SoftReset(inv_mpu9250_handle _this) {
 }
 int MPU9250_ReadSensorBlocking(inv_mpu9250_handle _this) {
     int res;
-    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+    if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) MPU9250_ACCEL_XOUT_H;
         _this->parents.i2cTransfer.data = _this->buf;
         _this->parents.i2cTransfer.dataSize = 22;
@@ -458,7 +458,7 @@ int MPU9250_ReadSensorBlocking(inv_mpu9250_handle _this) {
 }
 int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle _this) {
     int res;
-    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+    if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) MPU9250_ACCEL_XOUT_H;
         _this->parents.i2cTransfer.data = _this->buf;
         _this->parents.i2cTransfer.dataSize = 22;

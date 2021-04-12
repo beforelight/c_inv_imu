@@ -13,7 +13,7 @@ typedef struct __inv_icm20600 {
 
 
 inline void ICM20600_Destruct(inv_icm20600_handle _this) { ICM20602_Destruct((void *) _this); }
-inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint16_t _addr);
+inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint8_t _addr);
 inv_icm20600_handle ICM20600_Construct2(inv_spi _spi);
 
 

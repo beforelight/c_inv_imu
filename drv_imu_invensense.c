@@ -4,11 +4,13 @@
 //extern "C"{
 //#endif
 
-inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
+inv_imu_handle IMU_Construct(inv_i2c _i2c, uint8_t _addr) {
     inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
+    rtv->isSPI = false;
     rtv->i2c = _i2c;
     rtv->i2cTransfer.slaveAddress = _addr;
+    rtv->i2cTransfer.subAddressSize = 1;
     if (_addr == IMU_SlaveAddressAutoDetect) {
         rtv->addrAutoDetect = true;
     } else {
@@ -19,6 +21,7 @@ inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr) {
 inv_imu_handle IMU_Construct2(inv_spi _spi) {
     inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
+    rtv->isSPI = true;
     rtv->spi = _spi;
     return rtv;
 }
@@ -26,7 +29,7 @@ inv_imu_handle IMU_Construct2(inv_spi _spi) {
 
 int IMU_WriteReg(inv_imu_handle _this, uint8_t reg, uint8_t val) {
     int res = 0;
-    if (_this->i2c.masterTransferBlocking != NULL) {
+    if (!_this->isSPI) {
         _this->i2cTransfer.subAddress = reg;
         _this->i2cTransfer.data = &val;
         _this->i2cTransfer.dataSize = 1;
@@ -67,7 +70,7 @@ int IMU_WriteRegVerified(inv_imu_handle _this, uint8_t reg, uint8_t val) {
 }
 int IMU_ReadReg(inv_imu_handle _this, uint8_t reg, uint8_t *val) {
     int res = 0;
-    if (_this->i2c.masterTransferBlocking != NULL) {
+    if (!_this->isSPI) {
         _this->i2cTransfer.subAddress = reg;
         _this->i2cTransfer.data = val;
         _this->i2cTransfer.dataSize = 1;

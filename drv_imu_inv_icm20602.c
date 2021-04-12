@@ -70,7 +70,7 @@ inv_imu_vector_table icm20602_VectorTable =
         };
 
 
-inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint16_t _addr) {
+inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint8_t _addr) {
     inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_icm20602));
     memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20602_VectorTable;
@@ -355,7 +355,7 @@ int ICM20602_SoftReset(inv_icm20602_handle _this) {
 }
 int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this) {
     int res;
-    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+    if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20602_ACCEL_XOUT_H;
         _this->parents.i2cTransfer.data = _this->buf;
         _this->parents.i2cTransfer.dataSize = 14;
@@ -378,7 +378,7 @@ int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this) {
 }
 int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this) {
     int res;
-    if (_this->parents.i2c.masterTransferBlocking != NULL) {
+    if (!_this->parents.isSPI) {
         _this->parents.i2cTransfer.subAddress = (uint8_t) ICM20602_ACCEL_XOUT_H;
         _this->parents.i2cTransfer.data = _this->buf;
         _this->parents.i2cTransfer.dataSize = 14;

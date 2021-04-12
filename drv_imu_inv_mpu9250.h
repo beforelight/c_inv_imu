@@ -23,7 +23,7 @@ typedef struct __inv_mpu9250 {
 
 
 inline void MPU9250_Destruct(inv_mpu9250_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint16_t _addr);
+inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint8_t _addr);
 inv_mpu9250_handle MPU9250_Construct2(inv_spi _spi);
 
 

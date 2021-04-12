@@ -18,7 +18,7 @@ typedef struct __inv_mpu6050 {
 
 
 inline void MPU6050_Destruct(inv_mpu6050_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint16_t _addr);
+inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint8_t _addr);
 
 int MPU6050_Init(inv_mpu6050_handle _this, inv_imu_config _cfg);
 bool MPU6050_Detect(inv_mpu6050_handle _this);

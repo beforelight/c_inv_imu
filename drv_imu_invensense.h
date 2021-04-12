@@ -119,10 +119,15 @@ typedef struct __inv_imu_vector_table {
 
 typedef struct __inv_imu {
     inv_imu_vector_table *vtable;
-    inv_i2c i2c;
-    inv_spi spi;
-    inv_i2c_transfer i2cTransfer;
-    inv_spi_transfer spiTransfer;
+    union {
+        inv_i2c i2c;
+        inv_spi spi;
+    };
+    union {
+        inv_i2c_transfer i2cTransfer;
+        inv_spi_transfer spiTransfer;
+    };
+    bool isSPI;
     bool addrAutoDetect;
     bool isOpen;
     inv_imu_config cfg;
@@ -147,14 +152,14 @@ inline void IMU_Destruct(inv_imu_handle _this) { return _this->vtable->Destruct(
 
 const int IMU_SlaveAddressAutoDetect = 0;
 inline void _IMU_Destruct(inv_imu_handle _this) { INV_FREE(_this); }
-inv_imu_handle IMU_Construct(inv_i2c _i2c, uint16_t _addr);
+inv_imu_handle IMU_Construct(inv_i2c _i2c, uint8_t _addr);
 inv_imu_handle IMU_Construct2(inv_spi _spi);
 int IMU_WriteReg(inv_imu_handle _this, uint8_t reg, uint8_t val);
 int IMU_WriteRegVerified(inv_imu_handle _this, uint8_t reg, uint8_t val);
 int IMU_ReadReg(inv_imu_handle _this, uint8_t reg, uint8_t *val);
 int IMU_ModifyReg(inv_imu_handle _this, uint8_t reg, uint8_t val, uint8_t mask);
 inline bool _IMU_IsOpen(inv_imu_handle _this) { return _this->isOpen; }
-inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint16_t _addr);
+inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint8_t _addr);
 inv_imu_handle IMU_AutoConstruct2(inv_spi _spi);
 
 
