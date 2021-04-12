@@ -21,14 +21,11 @@ int INV_IMU_example(int argn, char **argv) {
                 IMU_Convert(imu0, data);
                 IMU_ConvertTemp(imu0, &temp);
                 printf("temp = %f", temp);
-                printf("accel(xyz) = %.3f %.3f %.3f\t gyro(xyz) = %.3f %.3f %.3f\t mag(xyz) = %.3f %.3f %.3f",
+                printf("accel(xyz) = %.3f %.3f %.3f\t gyro(xyz) = %.3f %.3f %.3f\t mag(xyz) = %.3f %.3f %.3f\r\n",
                        *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++);
             }
-        }
-        INV_INFO("初始化失败");
-    } else {
-        INV_INFO("imu0 == NULL，没接或者iic/spi读写出错");
-    }
+        } else { INV_INFO("初始化失败"); }
+    } else { INV_INFO("imu0 == NULL，没接或者iic/spi读写出错，或者malloc了个NULL"); }
     if (imu0 != NULL) {
         INV_INFO("释放资源");
         IMU_Destruct(imu0);
@@ -59,14 +56,11 @@ int INV_MPU6050_example(int argn, char **argv) {
                 MPU6050_Convert(imu0, data);
                 MPU6050_ConvertTemp(imu0, &temp);
                 printf("temp = %f", temp);
-                printf("accel(xyz) = %.3f %.3f %.3f\t gyro(xyz) = %.3f %.3f %.3f\t mag(xyz) = %.3f %.3f %.3f",
+                printf("accel(xyz) = %.3f %.3f %.3f\t gyro(xyz) = %.3f %.3f %.3f\t mag(xyz) = %.3f %.3f %.3f\r\n",
                        *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++, *buf++);
             }
-        }
-        INV_INFO("初始化失败");
-    } else {
-        INV_INFO("imu0 == NULL，没接或者iic/spi读写出错");
-    }
+        } else { INV_INFO("初始化失败"); }
+    } else { INV_INFO("imu0 == NULL，没接或者iic/spi读写出错，或者malloc了个NULL"); }
     if (imu0 != NULL) {
         INV_INFO("释放资源");
         MPU6050_Destruct(imu0);
