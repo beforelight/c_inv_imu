@@ -93,6 +93,8 @@ inv_icm20602_handle_t ICM20602_ConstructSPI(inv_spi_t _spi) {
     return rtv;
 }
 int ICM20602_Init(inv_icm20602_handle_t _this, inv_imu_config_t _cfg) {
+    assert(_this);
+    assert(_this->parents.vtable);
     _this->parents.cfg = _cfg;
     _this->parents.isOpen = false;
     int res = 0;

@@ -8,6 +8,7 @@
 
 
 #define IMU_AutoConstructI2CItem(model) {rtv = model##_ConstructI2C(_i2c,_addr);\
+assert(rtv);\
 if(IMU_Detect(rtv)){\
 return rtv;\
 }else{\
@@ -35,6 +36,7 @@ inv_imu_handle_t IMU_AutoConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
 }
 
 #define IMU_AutoConstructSPIItem(model) {rtv = model##_ConstructSPI(_spi);\
+assert(rtv);\
 if(IMU_Detect(rtv)){\
 return rtv;\
 }else{\

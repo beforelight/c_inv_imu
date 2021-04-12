@@ -9,7 +9,7 @@
 #include<stdbool.h>
 #include<string.h>
 #include<float.h>
-
+#include<assert.h>
 //处理未定义宏定义
 #if !defined(INV_MALLOC) || !defined(INV_FREE)
 #include<stdlib.h>
@@ -117,7 +117,11 @@ typedef struct __inv_imu {
 } inv_imu_t, *inv_imu_handle_t;
 
 
-static inline int IMU_Init(inv_imu_handle_t _this, inv_imu_config_t _cfg) { return _this->vtable->Init(_this, _cfg); }
+static inline int IMU_Init(inv_imu_handle_t _this, inv_imu_config_t _cfg) {
+    assert(_this);
+    assert(_this->vtable);
+    return _this->vtable->Init(_this, _cfg);
+}
 static inline bool IMU_Detect(inv_imu_handle_t _this) { return _this->vtable->Detect(_this); }
 static inline int IMU_SelfTest(inv_imu_handle_t _this) { return _this->vtable->SelfTest(_this); }
 static inline const char *IMU_Report(inv_imu_handle_t _this) { return _this->vtable->Report(_this); }

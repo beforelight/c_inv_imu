@@ -50,6 +50,8 @@ inv_mpu6050_handle_t MPU6050_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
 }
 
 int MPU6050_Init(inv_mpu6050_handle_t _this, inv_imu_config_t _cfg) {
+    assert(_this);
+    assert(_this->parents.vtable);
     _this->parents.cfg = _cfg;
     _this->parents.isOpen = false;
     int res = 0;

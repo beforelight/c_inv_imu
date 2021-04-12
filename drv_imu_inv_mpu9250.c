@@ -112,6 +112,8 @@ inv_mpu9250_handle_t MPU9250_ConstructSPI(inv_spi_t _spi) {
     return rtv;
 }
 int MPU9250_Init(inv_mpu9250_handle_t _this, inv_imu_config_t _cfg) {
+    assert(_this);
+    assert(_this->parents.vtable);
     _this->parents.cfg = _cfg;
     _this->parents.isOpen = false;
     int res = 0;
