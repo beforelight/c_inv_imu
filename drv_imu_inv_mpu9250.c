@@ -1,6 +1,7 @@
 ﻿
 #include "drv_imu_inv_mpu9250.h"
-#if INV_MPU9250_ENABLE
+#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
+
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{

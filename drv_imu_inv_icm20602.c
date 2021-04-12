@@ -1,5 +1,5 @@
 ﻿#include "drv_imu_inv_icm20602.h"
-#if INV_ICM20602_ENABLE
+#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{

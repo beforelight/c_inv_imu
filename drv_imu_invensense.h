@@ -11,22 +11,7 @@
 #include<float.h>
 
 //处理未定义宏定义
-#ifndef INV_MPU6050_ENABLE
-#define INV_MPU6050_ENABLE 0
-#endif
-#ifndef INV_MPU9250_ENABLE
-#define INV_MPU9250_ENABLE  0
-#endif
-#ifndef INV_ICM20602_ENABLE
-#define INV_ICM20602_ENABLE 0
-#endif
-#ifndef INV_ICM20600_ENABLE
-#define INV_ICM20600_ENABLE 0
-#endif
-#ifndef INV_ICM20948_ENABLE
-#define INV_ICM20948_ENABLE 0
-#endif
-#if !defined(INV_MALLOC)||!defined(INV_FREE)||!defined(INV_REALLOC)
+#if !defined(INV_MALLOC) || !defined(INV_FREE) || !defined(INV_REALLOC)
 #include<stdlib.h>
 #define INV_MALLOC malloc
 #define INV_FREE free
@@ -34,18 +19,17 @@
 #endif
 
 #ifndef INV_ASSERT
-#define INV_ASSERT(x) x
+#define INV_ASSERT(..)
 #endif
 #ifndef INV_ERROR
-#define INV_ERROR(x)  x
+#define INV_ERROR(...)
 #endif
 #ifndef INV_INFO
-#define INV_INFO(x)   x
+#define INV_INFO(...)
 #endif
 #ifndef INV_DEBUG
-#define INV_DEBUG(x)  x
+#define INV_DEBUG(...)
 #endif
-
 
 
 enum mpu_accel_fs {

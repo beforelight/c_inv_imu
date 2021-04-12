@@ -1,7 +1,7 @@
 ﻿#ifndef INV_IMU_INV_ICM20600_H
 #define INV_IMU_INV_ICM20600_H
 #include "drv_imu_inv_icm20602.h"
-#if INV_ICM20600_ENABLE
+#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{

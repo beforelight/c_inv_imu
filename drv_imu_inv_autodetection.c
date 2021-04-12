@@ -16,19 +16,19 @@ IMU_Destruct(rtv);\
 
 inv_imu_handle IMU_AutoConstructI2C(inv_i2c _i2c, uint8_t _addr) {
     void *rtv = NULL;
-#if INV_MPU6050_ENABLE
+#if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
     IMU_AutoConstructI2CItem(MPU6050);
 #endif
-#if INV_MPU9250_ENABLE
+#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
     IMU_AutoConstructI2CItem(MPU9250);
 #endif
-#if INV_ICM20602_ENABLE
+#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
     IMU_AutoConstructI2CItem(ICM20602);
 #endif
-#if INV_ICM20600_ENABLE
+#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
     IMU_AutoConstructI2CItem(ICM20600);
 #endif
-#if INV_ICM20948_ENABLE
+#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
     IMU_AutoConstructI2CItem(ICM20948);
 #endif
     return rtv;
@@ -45,16 +45,16 @@ IMU_Destruct(rtv);\
 
 inv_imu_handle IMU_AutoConstructSPI(inv_spi _spi) {
     void *rtv = NULL;
-#if INV_MPU9250_ENABLE
+#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
     IMU_AutoConstructSPIItem(MPU9250);
 #endif
-#if INV_ICM20602_ENABLE
+#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
     IMU_AutoConstructSPIItem(ICM20602);
 #endif
-#if INV_ICM20600_ENABLE
+#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
     IMU_AutoConstructSPIItem(ICM20600);
 #endif
-#if INV_ICM20948_ENABLE
+#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
     IMU_AutoConstructSPIItem(ICM20948);
 #endif
     return rtv;

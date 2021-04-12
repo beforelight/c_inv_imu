@@ -3,7 +3,7 @@
 #ifndef INV_IMU_INV_MPU6050_H
 #define INV_IMU_INV_MPU6050_H
 #include "drv_imu_invensense.h"
-#if INV_MPU6050_ENABLE
+#if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{

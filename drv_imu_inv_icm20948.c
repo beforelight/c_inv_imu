@@ -1,7 +1,8 @@
 ﻿
 
 #include "drv_imu_inv_icm20948.h"
-#if INV_ICM20948_ENABLE
+#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
+
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
