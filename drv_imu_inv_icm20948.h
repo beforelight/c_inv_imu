@@ -20,8 +20,8 @@ typedef struct __inv_icm20948 {
 
 
 inline void ICM20948_Destruct(inv_icm20948_handle _this) { _IMU_Destruct((void *) _this); }
-inv_icm20948_handle ICM20948_Construct(inv_i2c _i2c, uint8_t _addr);
-inv_icm20948_handle ICM20948_Construct2(inv_spi _spi);
+inv_icm20948_handle ICM20948_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inv_icm20948_handle ICM20948_ConstructSPI(inv_spi _spi);
 
 
 int ICM20948_Init(inv_icm20948_handle _this, inv_imu_config _cfg);
@@ -34,8 +34,8 @@ int ICM20948_SoftReset(inv_icm20948_handle _this);
 int ICM20948_ReadSensorBlocking(inv_icm20948_handle _this);
 int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle _this);
 int ICM20948_Convert(inv_icm20948_handle _this, float array[9]);
-int ICM20948_Convert2(inv_icm20948_handle _this, int16_t raw[9]);
-int ICM20948_Convert3(inv_icm20948_handle _this, float *temp);
+int ICM20948_ConvertRaw(inv_icm20948_handle _this, int16_t raw[9]);
+int ICM20948_ConvertTemp(inv_icm20948_handle _this, float *temp);
 
 
 int ICM20948_SubI2cRead(inv_icm20948_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);

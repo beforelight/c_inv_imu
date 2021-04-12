@@ -18,7 +18,7 @@ typedef struct __inv_mpu6050 {
 
 
 inline void MPU6050_Destruct(inv_mpu6050_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint8_t _addr);
+inv_mpu6050_handle MPU6050_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
 
 int MPU6050_Init(inv_mpu6050_handle _this, inv_imu_config _cfg);
 bool MPU6050_Detect(inv_mpu6050_handle _this);
@@ -30,8 +30,8 @@ int MPU6050_SoftReset(inv_mpu6050_handle _this);
 int MPU6050_ReadSensorBlocking(inv_mpu6050_handle _this);
 int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle _this);
 int MPU6050_Convert(inv_mpu6050_handle _this, float array[9]);
-int MPU6050_Convert2(inv_mpu6050_handle _this, int16_t raw[9]);
-int MPU6050_Convert3(inv_mpu6050_handle _this, float *temp);
+int MPU6050_ConvertRaw(inv_mpu6050_handle _this, int16_t raw[9]);
+int MPU6050_ConvertTemp(inv_mpu6050_handle _this, float *temp);
 
 
 enum MPU6050_RegMap {

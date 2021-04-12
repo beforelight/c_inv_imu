@@ -23,8 +23,8 @@ typedef struct __inv_mpu9250 {
 
 
 inline void MPU9250_Destruct(inv_mpu9250_handle _this) { _IMU_Destruct((void *) _this); }
-inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint8_t _addr);
-inv_mpu9250_handle MPU9250_Construct2(inv_spi _spi);
+inv_mpu9250_handle MPU9250_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inv_mpu9250_handle MPU9250_ConstructSPI(inv_spi _spi);
 
 
 int MPU9250_Init(inv_mpu9250_handle _this, inv_imu_config _cfg);
@@ -37,8 +37,8 @@ int MPU9250_SoftReset(inv_mpu9250_handle _this);
 int MPU9250_ReadSensorBlocking(inv_mpu9250_handle _this);
 int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle _this);
 int MPU9250_Convert(inv_mpu9250_handle _this, float array[9]);
-int MPU9250_Convert2(inv_mpu9250_handle _this, int16_t raw[9]);
-int MPU9250_Convert3(inv_mpu9250_handle _this, float *temp);
+int MPU9250_ConvertRaw(inv_mpu9250_handle _this, int16_t raw[9]);
+int MPU9250_ConvertTemp(inv_mpu9250_handle _this, float *temp);
 
 
 int MPU9250_SubI2cRead(inv_mpu9250_handle _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);

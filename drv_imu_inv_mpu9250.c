@@ -82,21 +82,21 @@ inv_imu_vector_table mpu9250_VectorTable =
                 .ReadSensorBlocking =(void *) MPU9250_ReadSensorBlocking,
                 .ReadSensorNonBlocking =(void *) MPU9250_ReadSensorNonBlocking,
                 .Convert =(void *) MPU9250_Convert,
-                .Convert2 =(void *) MPU9250_Convert2,
-                .Convert3 =(void *) MPU9250_Convert3,
+                .ConvertRaw =(void *) MPU9250_ConvertRaw,
+                .ConvertTemp =(void *) MPU9250_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
                 .Destruct = (void*) MPU9250_Destruct
         };
 const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle MPU9250_Construct(inv_i2c _i2c, uint8_t _addr) {
-    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_mpu9250));
+    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
-inv_mpu9250_handle MPU9250_Construct2(inv_spi _spi) {
-    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_Construct2(_spi), sizeof(inv_mpu9250));
+inv_mpu9250_handle MPU9250_ConstructSPI(inv_spi _spi) {
+    inv_mpu9250_handle rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_mpu9250));
     memset((void *) ((char *) rtv + sizeof(inv_mpu9250) - sizeof(inv_imu)), 0, sizeof(inv_mpu9250) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -260,7 +260,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle) _this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_Convert2((inv_imu_handle) _this, abuf);
+        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
@@ -277,7 +277,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle) _this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_Convert2((inv_imu_handle) _this, abuf);
+        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -500,7 +500,7 @@ int MPU9250_Convert(inv_mpu9250_handle _this, float *array) {
     array[8] = magUnit * _this->ak8963Asa[2] * ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int MPU9250_Convert2(inv_mpu9250_handle _this, int16_t *raw) {
+int MPU9250_ConvertRaw(inv_mpu9250_handle _this, int16_t *raw) {
     uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -521,7 +521,7 @@ int MPU9250_Convert2(inv_mpu9250_handle _this, int16_t *raw) {
     raw[8] = ((int16_t) (buf[14 + 6] << 8) | buf[14 + 5]);
     return 0;
 }
-int MPU9250_Convert3(inv_mpu9250_handle _this, float *temp) {
+int MPU9250_ConvertTemp(inv_mpu9250_handle _this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) (_this->buf[6] << 8) | _this->buf[7]) / 333.87f + 21.0f; }
     return 0;
 }

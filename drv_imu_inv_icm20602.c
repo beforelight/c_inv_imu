@@ -63,22 +63,22 @@ inv_imu_vector_table icm20602_VectorTable =
                 .ReadSensorBlocking =(void *) ICM20602_ReadSensorBlocking,
                 .ReadSensorNonBlocking =(void *) ICM20602_ReadSensorNonBlocking,
                 .Convert =(void *) ICM20602_Convert,
-                .Convert2 =(void *) ICM20602_Convert2,
-                .Convert3 =(void *) ICM20602_Convert3,
+                .ConvertRaw =(void *) ICM20602_ConvertRaw,
+                .ConvertTemp =(void *) ICM20602_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
                 .Destruct = (void*) ICM20602_Destruct
         };
 
 
-inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint8_t _addr) {
-    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_icm20602));
+inv_icm20602_handle ICM20602_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
+    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_icm20602));
     memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
-inv_icm20602_handle ICM20602_Construct2(inv_spi _spi) {
-    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_Construct2(_spi), sizeof(inv_icm20602));
+inv_icm20602_handle ICM20602_ConstructSPI(inv_spi _spi) {
+    inv_icm20602_handle rtv = (void *) INV_REALLOC(IMU_ConstructSPI(_spi), sizeof(inv_icm20602));
     memset((void *) ((char *) rtv + sizeof(inv_icm20602) - sizeof(inv_imu)), 0, sizeof(inv_icm20602) - sizeof(inv_imu));
     rtv->parents.vtable = &icm20602_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
@@ -181,7 +181,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle) _this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_Convert2((inv_imu_handle) _this, abuf);
+        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
@@ -198,7 +198,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle) _this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle) _this);
-        IMU_Convert2((inv_imu_handle) _this, abuf);
+        IMU_ConvertRaw((inv_imu_handle) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -409,7 +409,7 @@ int ICM20602_Convert(inv_icm20602_handle _this, float *array) {
     array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int ICM20602_Convert2(inv_icm20602_handle _this, int16_t *raw) {
+int ICM20602_ConvertRaw(inv_icm20602_handle _this, int16_t *raw) {
     uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -419,7 +419,7 @@ int ICM20602_Convert2(inv_icm20602_handle _this, int16_t *raw) {
     raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int ICM20602_Convert3(inv_icm20602_handle _this, float *temp) {
+int ICM20602_ConvertTemp(inv_icm20602_handle _this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) (_this->buf[6] << 8) | _this->buf[7]) / 326.8f + 25.0f; }
     return 0;
 }

@@ -4,7 +4,7 @@
 //extern "C"{
 //#endif
 
-inv_imu_handle IMU_Construct(inv_i2c _i2c, uint8_t _addr) {
+inv_imu_handle IMU_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
     inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
     rtv->isSPI = false;
@@ -18,7 +18,7 @@ inv_imu_handle IMU_Construct(inv_i2c _i2c, uint8_t _addr) {
     }
     return rtv;
 }
-inv_imu_handle IMU_Construct2(inv_spi _spi) {
+inv_imu_handle IMU_ConstructSPI(inv_spi _spi) {
     inv_imu_handle rtv = INV_MALLOC(sizeof(inv_imu));
     memset(rtv, 0, sizeof(inv_imu));
     rtv->isSPI = true;
@@ -307,6 +307,8 @@ inv_imu_config IMU_ConfigDefault() {
 
     return result;
 }
+void _IMU_Destruct(inv_imu_handle _this) { INV_FREE(_this); }
+bool _IMU_IsOpen(inv_imu_handle _this) { return _this->isOpen; }
 
 
 //#if defined(__cplusplus) || defined(c_plusplus)

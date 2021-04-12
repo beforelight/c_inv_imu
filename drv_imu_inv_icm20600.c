@@ -17,19 +17,19 @@ inv_imu_vector_table icm20600_VectorTable =
                 .ReadSensorBlocking =(void *) ICM20602_ReadSensorBlocking,
                 .ReadSensorNonBlocking =(void *) ICM20602_ReadSensorNonBlocking,
                 .Convert =(void *) ICM20602_Convert,
-                .Convert2 =(void *) ICM20602_Convert2,
-                .Convert3 =(void *) ICM20602_Convert3,
+                .ConvertRaw =(void *) ICM20602_ConvertRaw,
+                .ConvertTemp =(void *) ICM20602_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
                 .Destruct = (void*) ICM20600_Destruct,
         };
 
-inv_icm20600_handle ICM20600_Construct(inv_i2c _i2c, uint8_t _addr) {
-    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_Construct(_i2c, _addr);
+inv_icm20600_handle ICM20600_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
+    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_ConstructI2C(_i2c, _addr);
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;
 }
-inv_icm20600_handle ICM20600_Construct2(inv_spi _spi) {
-    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_Construct2(_spi);
+inv_icm20600_handle ICM20600_ConstructSPI(inv_spi _spi) {
+    inv_icm20600_handle rtv = (inv_icm20600_handle) ICM20602_ConstructSPI(_spi);
     rtv->parents.parents.vtable = &icm20600_VectorTable;
     return rtv;
 }

@@ -31,14 +31,14 @@ inv_imu_vector_table mpu6050_VectorTable = {
         .ReadSensorBlocking =(void *) MPU6050_ReadSensorBlocking,
         .ReadSensorNonBlocking =(void *) MPU6050_ReadSensorNonBlocking,
         .Convert =(void *) MPU6050_Convert,
-        .Convert2 =(void *) MPU6050_Convert2,
-        .Convert3 =(void *) MPU6050_Convert3,
+        .ConvertRaw =(void *) MPU6050_ConvertRaw,
+        .ConvertTemp =(void *) MPU6050_ConvertTemp,
         .IsOpen =(void *) _IMU_IsOpen,
         .Destruct = (void*) MPU6050_Destruct
 };
 
-inv_mpu6050_handle MPU6050_Construct(inv_i2c _i2c, uint8_t _addr) {
-    inv_mpu6050_handle rtv = (void *) INV_REALLOC(IMU_Construct(_i2c, _addr), sizeof(inv_mpu6050));
+inv_mpu6050_handle MPU6050_ConstructI2C(inv_i2c _i2c, uint8_t _addr) {
+    inv_mpu6050_handle rtv = (void *) INV_REALLOC(IMU_ConstructI2C(_i2c, _addr), sizeof(inv_mpu6050));
     memset((void *) ((char *)rtv + sizeof(inv_mpu6050) - sizeof(inv_imu)), 0, sizeof(inv_mpu6050) - sizeof(inv_imu));
     rtv->parents.vtable = &mpu6050_VectorTable;
     return rtv;
@@ -138,7 +138,7 @@ int MPU6050_SelfTest(inv_mpu6050_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle)_this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle)_this);
-        IMU_Convert2((inv_imu_handle)_this, abuf);
+        IMU_ConvertRaw((inv_imu_handle)_this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
@@ -155,7 +155,7 @@ int MPU6050_SelfTest(inv_mpu6050_handle _this) {
     while (times--) {
         while (!IMU_DataReady((inv_imu_handle)_this)) {}
         res |= IMU_ReadSensorBlocking((inv_imu_handle)_this);
-        IMU_Convert2((inv_imu_handle)_this, abuf);
+        IMU_ConvertRaw((inv_imu_handle)_this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -285,7 +285,7 @@ int MPU6050_Convert(inv_mpu6050_handle _this, float *array) {
     array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int MPU6050_Convert2(inv_mpu6050_handle _this, int16_t *raw) {
+int MPU6050_ConvertRaw(inv_mpu6050_handle _this, int16_t *raw) {
     uint8_t *buf = _this->buf;
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
@@ -295,7 +295,7 @@ int MPU6050_Convert2(inv_mpu6050_handle _this, int16_t *raw) {
     raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
     return 0;
 }
-int MPU6050_Convert3(inv_mpu6050_handle _this, float *temp) {
+int MPU6050_ConvertTemp(inv_mpu6050_handle _this, float *temp) {
     if (temp) {
         *temp = (float) ((int16_t) ((((int16_t)_this->buf[6] << 8) | _this->buf[7]) - 521)) / 340.0f + 35;
     }

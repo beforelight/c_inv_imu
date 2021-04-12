@@ -18,8 +18,8 @@ typedef struct __inv_icm20602 {
 
 
 inline void ICM20602_Destruct(inv_icm20602_handle _this) { _IMU_Destruct((void *) _this); }
-inv_icm20602_handle ICM20602_Construct(inv_i2c _i2c, uint8_t _addr);
-inv_icm20602_handle ICM20602_Construct2(inv_spi _spi);
+inv_icm20602_handle ICM20602_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inv_icm20602_handle ICM20602_ConstructSPI(inv_spi _spi);
 
 
 int ICM20602_Init(inv_icm20602_handle _this, inv_imu_config _cfg);
@@ -32,8 +32,8 @@ int ICM20602_SoftReset(inv_icm20602_handle _this);
 int ICM20602_ReadSensorBlocking(inv_icm20602_handle _this);
 int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle _this);
 int ICM20602_Convert(inv_icm20602_handle _this, float array[9]);
-int ICM20602_Convert2(inv_icm20602_handle _this, int16_t raw[9]);
-int ICM20602_Convert3(inv_icm20602_handle _this, float *temp);
+int ICM20602_ConvertRaw(inv_icm20602_handle _this, int16_t raw[9]);
+int ICM20602_ConvertTemp(inv_icm20602_handle _this, float *temp);
 
 
 enum ICM20602_RegMap {

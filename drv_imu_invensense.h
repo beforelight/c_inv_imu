@@ -111,8 +111,8 @@ typedef struct __inv_imu_vector_table {
     int (*ReadSensorBlocking)(void *_this);
     int (*ReadSensorNonBlocking)(void *_this);
     int (*Convert)(void *_this, float array[9]);
-    int (*Convert2)(void *_this, int16_t raw[9]);
-    int (*Convert3)(void *_this, float *temp);
+    int (*ConvertRaw)(void *_this, int16_t raw[9]);
+    int (*ConvertTemp)(void *_this, float *temp);
     bool (*IsOpen)(void *_this);
     void (*Destruct)(void *_this);
 } inv_imu_vector_table;
@@ -134,33 +134,33 @@ typedef struct __inv_imu {
 } inv_imu, *inv_imu_handle;
 
 
-inline int IMU_Init(inv_imu_handle _this, inv_imu_config _cfg) { return _this->vtable->Init(_this, _cfg); }
-inline bool IMU_Detect(inv_imu_handle _this) { return _this->vtable->Detect(_this); }
-inline int IMU_SelfTest(inv_imu_handle _this) { return _this->vtable->SelfTest(_this); }
-inline const char *IMU_Report(inv_imu_handle _this) { return _this->vtable->Report(_this); }
-inline bool IMU_DataReady(inv_imu_handle _this) { return _this->vtable->DataReady(_this); }
-inline int IMU_EnableDataReadyInt(inv_imu_handle _this) { return _this->vtable->EnableDataReadyInt(_this); }
-inline int IMU_SoftReset(inv_imu_handle _this) { return _this->vtable->SoftReset(_this); }
-inline int IMU_ReadSensorBlocking(inv_imu_handle _this) { return _this->vtable->ReadSensorBlocking(_this); }
-inline int IMU_ReadSensorNonBlocking(inv_imu_handle _this) { return _this->vtable->ReadSensorNonBlocking(_this); }
+static inline int IMU_Init(inv_imu_handle _this, inv_imu_config _cfg) { return _this->vtable->Init(_this, _cfg); }
+static inline bool IMU_Detect(inv_imu_handle _this) { return _this->vtable->Detect(_this); }
+static inline int IMU_SelfTest(inv_imu_handle _this) { return _this->vtable->SelfTest(_this); }
+static inline const char *IMU_Report(inv_imu_handle _this) { return _this->vtable->Report(_this); }
+static inline bool IMU_DataReady(inv_imu_handle _this) { return _this->vtable->DataReady(_this); }
+static inline int IMU_EnableDataReadyInt(inv_imu_handle _this) { return _this->vtable->EnableDataReadyInt(_this); }
+static inline int IMU_SoftReset(inv_imu_handle _this) { return _this->vtable->SoftReset(_this); }
+static inline int IMU_ReadSensorBlocking(inv_imu_handle _this) { return _this->vtable->ReadSensorBlocking(_this); }
+static inline int IMU_ReadSensorNonBlocking(inv_imu_handle _this) { return _this->vtable->ReadSensorNonBlocking(_this); }
 //顺序是 accel(xyz) gyro(xyz) mag(xyz)
-inline int IMU_Convert(inv_imu_handle _this, float array[9]) { return _this->vtable->Convert(_this, array); };
-inline int IMU_Convert2(inv_imu_handle _this, int16_t raw[9]) { return _this->vtable->Convert2(_this, raw); }
-inline int IMU_Convert3(inv_imu_handle _this, float *temp) { return _this->vtable->Convert3(_this, temp); }
-inline bool IMU_IsOpen(inv_imu_handle _this) { return _this->vtable->IsOpen(_this); }
-inline void IMU_Destruct(inv_imu_handle _this) { return _this->vtable->Destruct(_this); }
+static inline int IMU_Convert(inv_imu_handle _this, float array[9]) { return _this->vtable->Convert(_this, array); };
+static inline int IMU_ConvertRaw(inv_imu_handle _this, int16_t raw[9]) { return _this->vtable->ConvertRaw(_this, raw); }
+static inline int IMU_ConvertTemp(inv_imu_handle _this, float *temp) { return _this->vtable->ConvertTemp(_this, temp); }
+static inline bool IMU_IsOpen(inv_imu_handle _this) { return _this->vtable->IsOpen(_this); }
+static inline void IMU_Destruct(inv_imu_handle _this) { return _this->vtable->Destruct(_this); }
 
 const int IMU_SlaveAddressAutoDetect = 0;
-inline void _IMU_Destruct(inv_imu_handle _this) { INV_FREE(_this); }
-inv_imu_handle IMU_Construct(inv_i2c _i2c, uint8_t _addr);
-inv_imu_handle IMU_Construct2(inv_spi _spi);
+void _IMU_Destruct(inv_imu_handle _this);
+inv_imu_handle IMU_ConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inv_imu_handle IMU_ConstructSPI(inv_spi _spi);
 int IMU_WriteReg(inv_imu_handle _this, uint8_t reg, uint8_t val);
 int IMU_WriteRegVerified(inv_imu_handle _this, uint8_t reg, uint8_t val);
 int IMU_ReadReg(inv_imu_handle _this, uint8_t reg, uint8_t *val);
 int IMU_ModifyReg(inv_imu_handle _this, uint8_t reg, uint8_t val, uint8_t mask);
-inline bool _IMU_IsOpen(inv_imu_handle _this) { return _this->isOpen; }
-inv_imu_handle IMU_AutoConstruct(inv_i2c _i2c, uint8_t _addr);
-inv_imu_handle IMU_AutoConstruct2(inv_spi _spi);
+bool _IMU_IsOpen(inv_imu_handle _this);
+inv_imu_handle IMU_AutoConstructI2C(inv_i2c _i2c, uint8_t _addr);
+inv_imu_handle IMU_AutoConstructSPI(inv_spi _spi);
 
 
 struct _inv_weak_map_int {
