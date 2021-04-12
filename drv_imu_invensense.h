@@ -1,10 +1,51 @@
 ﻿#ifndef C_INV_IMU_INV_IMU_H
 #define C_INV_IMU_INV_IMU_H
-#include <inc_stdlib.h>
-#include <hitsic_common.h>
+#ifdef _C_INV_IMU_DEV_
+#include "drv_imu_invensense_port_template.h"
+#else
+#include "../drv_imu_invensense_port.h"
+#endif
+#include<stdint.h>
+#include<stdbool.h>
+#include<string.h>
+#include<float.h>
 
+//处理未定义宏定义
+#ifndef INV_MPU6050_ENABLE
+#define INV_MPU6050_ENABLE 0
+#endif
+#ifndef INV_MPU9250_ENABLE
+#define INV_MPU9250_ENABLE  0
+#endif
+#ifndef INV_ICM20602_ENABLE
+#define INV_ICM20602_ENABLE 0
+#endif
+#ifndef INV_ICM20600_ENABLE
+#define INV_ICM20600_ENABLE 0
+#endif
+#ifndef INV_ICM20948_ENABLE
+#define INV_ICM20948_ENABLE 0
+#endif
+#if !defined(INV_MALLOC)||!defined(INV_FREE)||!defined(INV_REALLOC)
+#include<stdlib.h>
+#define INV_MALLOC malloc
+#define INV_FREE free
+#define INV_REALLOC realloc
+#endif
 
-#include <drv_imu_invensense_port.h>
+#ifndef INV_ASSERT
+#define INV_ASSERT(x) x
+#endif
+#ifndef INV_ERROR
+#define INV_ERROR(x)  x
+#endif
+#ifndef INV_INFO
+#define INV_INFO(x)   x
+#endif
+#ifndef INV_DEBUG
+#define INV_DEBUG(x)  x
+#endif
+
 
 
 enum mpu_accel_fs {
@@ -13,7 +54,6 @@ enum mpu_accel_fs {
     MPU_FS_8G = 8,
     MPU_FS_16G = 16,
 };
-
 enum mpu_accel_bw {
     MPU_ABW_420 = 420,
     MPU_ABW_218 = 218,
@@ -23,7 +63,6 @@ enum mpu_accel_bw {
     MPU_ABW_10 = 10,
     MPU_ABW_5 = 5,
 };
-
 enum mpu_gyro_fs {
     MPU_FS_125dps = 125,
     MPU_FS_250dps = 250,
@@ -31,7 +70,6 @@ enum mpu_gyro_fs {
     MPU_FS_1000dps = 1000,
     MPU_FS_2000dps = 2000,
 };
-
 enum mpu_gyro_bw {
     MPU_GBW_361 = 361,
     MPU_GBW_250 = 250,
@@ -42,33 +80,24 @@ enum mpu_gyro_bw {
     MPU_GBW_10 = 10,
     MPU_GBW_5 = 5,
 };
-
 enum mpu_gyro_unit {
     MPU_UNIT_DegPerSec,
     MPU_UNIT_RadPerSec,
     MPU_UNIT_RevolutionsPerMinute,
 };
-
 enum mpu_accel_unit {
     MPU_UNIT_MetersPerSquareSecond,
     MPU_UNIT_G,
     MPU_UNIT_mG
 };
-
 typedef struct __imu_config {
     enum mpu_accel_fs accelFullScale;
-
     enum mpu_accel_bw accelBandwidth;
-
     enum mpu_gyro_fs gyroFullScale;
-
     enum mpu_gyro_bw gyroBandwidth;
-
     enum mpu_gyro_unit gyroUnit;
-
     enum mpu_accel_unit accelUnit;
 } inv_imu_config;
-
 inv_imu_config IMU_ConfigDefault();
 
 typedef struct __inv_imu_vector_table {

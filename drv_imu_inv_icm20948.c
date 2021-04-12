@@ -294,7 +294,7 @@ int ICM20948_SelfTest(inv_icm20948_handle _this) {
                 accel_result = 1;
                 INV_DEBUG("accel[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             } else {
-                INV_TRACE("accel[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                INV_INFO("accel[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             }
         }
     } else {
@@ -324,7 +324,7 @@ int ICM20948_SelfTest(inv_icm20948_handle _this) {
                 accel_result = 1;
                 INV_DEBUG("gyro[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             } else {
-                INV_TRACE("gyro[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                INV_INFO("gyro[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             }
         }
     } else {
@@ -410,11 +410,11 @@ int ICM20948_Convert(inv_icm20948_handle _this, float *array) {
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
-//            INV_TRACE("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 8] & MPU9250_AK8963_OVERFLOW) {
-//            INV_TRACE("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     array[6] = magUnit * ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -433,11 +433,11 @@ int ICM20948_Convert2(inv_icm20948_handle _this, int16_t *raw) {
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
-//            INV_TRACE("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 8] & MPU9250_AK8963_OVERFLOW) {
-//            INV_TRACE("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     raw[6] = ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);

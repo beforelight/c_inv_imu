@@ -172,7 +172,7 @@ int MPU9250_Init(inv_mpu9250_handle _this, inv_imu_config _cfg) {
     //AK8963 get calibration data
     uint8_t response[3] = {0, 0, 0};
     res |= MPU9250_SubI2cRead(_this, MPU9250_AK8963_I2C_ADDR, (uint8_t) AK8963_ASAX, response, 3);
-    INV_TRACE("0x%x 0x%x 0x%x at AK8963_ASAX", response[0], response[1], response[2]);
+    INV_INFO("0x%x 0x%x 0x%x at AK8963_ASAX", response[0], response[1], response[2]);
     //AK8963_SENSITIVITY_SCALE_FACTOR
     //ak8963Asa[i++] = (s16)((data - 128.0f) / 256.0f + 1.0f) ;
     //ak8963Asa[i++] = (s16)((data - 128.0f) *0.00390625f + 1.0f) ;
@@ -180,7 +180,7 @@ int MPU9250_Init(inv_mpu9250_handle _this, inv_imu_config _cfg) {
     _this->ak8963Asa[1] = (1.0f + 0.00390625f * ((int16_t) (response[1]) - 128));
     _this->ak8963Asa[2] = (1.0f + 0.00390625f * ((int16_t) (response[2]) - 128));
 
-    INV_TRACE("%f %f %f at ak8963Asa", _this->ak8963Asa[0], _this->ak8963Asa[1], _this->ak8963Asa[2]);
+    INV_INFO("%f %f %f at ak8963Asa", _this->ak8963Asa[0], _this->ak8963Asa[1], _this->ak8963Asa[2]);
     val = MPU9250_AK8963_POWER_DOWN;
     res |= MPU9250_SubI2cWrite(_this, MPU9250_AK8963_I2C_ADDR, (uint8_t) AK8963_CNTL, &val, 1);
 
@@ -322,7 +322,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
                 INV_DEBUG("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
-                INV_TRACE("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
+                INV_INFO("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
@@ -337,7 +337,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
                 INV_DEBUG("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
-                INV_TRACE("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                INV_INFO("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
@@ -366,7 +366,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
@@ -377,7 +377,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -393,7 +393,7 @@ int MPU9250_SelfTest(inv_mpu9250_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                INV_INFO("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -420,7 +420,7 @@ int MPU9250_SoftReset(inv_mpu9250_handle _this) {
     //等待复位成功
     do {
         IMU_ReadReg((inv_imu_handle) _this, (uint8_t) MPU9250_PWR_MGMT_1, &val);
-        INV_TRACE("0x%x at PWR_MGMT_1,wait it get 0x1", val);
+        INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x1", val);
     } while (val != 0x1);
 
     //唤起睡眠
@@ -488,11 +488,11 @@ int MPU9250_Convert(inv_mpu9250_handle _this, float *array) {
     array[4] = _this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
     array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
-//            INV_TRACE("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 7] & MPU9250_AK8963_OVERFLOW) {
-//            INV_TRACE("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     array[6] = magUnit * _this->ak8963Asa[0] * ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -509,11 +509,11 @@ int MPU9250_Convert2(inv_mpu9250_handle _this, int16_t *raw) {
     raw[4] = ((int16_t) ((buf[10] << 8) | buf[11]));
     raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
-//            INV_TRACE("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 7] & MPU9250_AK8963_OVERFLOW) {
-//            INV_TRACE("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     raw[6] = ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);

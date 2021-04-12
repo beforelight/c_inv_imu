@@ -242,7 +242,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
                 INV_DEBUG("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
-                INV_TRACE("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
+                INV_INFO("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
@@ -257,7 +257,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
                 INV_DEBUG("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
-                INV_TRACE("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                INV_INFO("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
@@ -286,7 +286,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
@@ -297,7 +297,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -313,7 +313,7 @@ int ICM20602_SelfTest(inv_icm20602_handle _this) {
                 INV_DEBUG("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_TRACE("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                INV_INFO("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -340,7 +340,7 @@ int ICM20602_SoftReset(inv_icm20602_handle _this) {
     //等待复位成功
     do {
         IMU_ReadReg((inv_imu_handle) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-        INV_TRACE("0x%x at PWR_MGMT_1,wait it get 0x41", val);
+        INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x41", val);
     } while (val != 0x41);
 
     //唤起睡眠

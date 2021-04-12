@@ -209,7 +209,7 @@ int MPU6050_SelfTest(inv_mpu6050_handle _this) {
                       Change_from_factory_trim);
             accel_result = 1;
         } else {
-            INV_TRACE("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+            INV_INFO("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
         }
     }
@@ -222,7 +222,7 @@ int MPU6050_SelfTest(inv_mpu6050_handle _this) {
                       Change_from_factory_trim);
             gyro_result = 1;
         } else {
-            INV_TRACE("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+            INV_INFO("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
         }
     }
@@ -248,7 +248,7 @@ int MPU6050_SoftReset(inv_mpu6050_handle _this) {
     //等待复位成功
     do {
         IMU_ReadReg((inv_imu_handle)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-        INV_TRACE("0x%x at PWR_MGMT_1,wait it get 0x40", val);
+        INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x40", val);
     } while (val != 0x40);
 
     //唤起睡眠
