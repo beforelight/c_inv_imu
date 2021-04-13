@@ -13,15 +13,24 @@
 
 #define INV_MALLOC malloc
 #define INV_FREE free
+#define INV_REALLOC realloc
 
 //设置log接口，注意接口函数是带换行符的printf
-#include<stdio.h>
 
-#define SYSLOG_A(...) printf("%s:%d assert:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define SYSLOG_E(...)  printf("%s:%d error:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define SYSLOG_I(...)   printf("%s:%d info:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define SYSLOG_D(...)  printf("%s:%d debug:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#endif
+#define INV_USE_HITSIC_SYSLOG (0U)
+
+#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
+
+#define INVIMU_LOG_LVL (3U)
+
+#else // INV_USE_HITSIC_SYSLOG
+
+#include <stdio.h>
+#define INV_PRINTF(...) printf(__VA_ARGS__);printf("\r\n")
+
+#endif // ! INV_USE_HITSIC_SYSLOG
+
+#endif // ! 1
 
 
 #include<stdint.h>
