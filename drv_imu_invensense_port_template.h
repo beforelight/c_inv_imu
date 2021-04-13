@@ -17,10 +17,10 @@
 //设置log接口，注意接口函数是带换行符的printf
 #include<stdio.h>
 
-#define INV_ASSERT(...) printf("%s:%d assert:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define INV_ERROR(...)  printf("%s:%d error:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define INV_INFO(...)   printf("%s:%d info:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
-#define INV_DEBUG(...)  printf("%s:%d debug:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
+#define SYSLOG_A(...) printf("%s:%d assert:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
+#define SYSLOG_E(...)  printf("%s:%d error:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
+#define SYSLOG_I(...)   printf("%s:%d info:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
+#define SYSLOG_D(...)  printf("%s:%d debug:",__FILE__, __LINE__);printf(__VA_ARGS__);printf("\r\n")
 #endif
 
 

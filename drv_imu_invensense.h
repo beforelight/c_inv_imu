@@ -10,26 +10,6 @@
 #include<string.h>
 #include<float.h>
 #include<assert.h>
-//处理未定义宏定义
-#if !defined(INV_MALLOC) || !defined(INV_FREE)
-#include<stdlib.h>
-#define INV_MALLOC malloc
-#define INV_FREE free
-#endif
-
-#ifndef INV_ASSERT
-#define INV_ASSERT(..)
-#endif
-#ifndef INV_ERROR
-#define INV_ERROR(...)
-#endif
-#ifndef INV_INFO
-#define INV_INFO(...)
-#endif
-#ifndef INV_DEBUG
-#define INV_DEBUG(...)
-#endif
-
 
 enum mpu_accel_fs_t {
     MPU_FS_2G = 2,

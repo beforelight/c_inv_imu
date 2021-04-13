@@ -1,6 +1,22 @@
 ﻿#include "drv_imu_inv_mpu6050.h"
 #if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
 
+#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
+
+#define SYSLOG_LVL (INVIMU_LOG_LVL)
+#define SYSLOG_TAG "INVIMU"
+#include<inc_syslog.h>
+
+#else // INV_USE_HITSIC_SYSLOG
+
+#define SYSLOG_A(...) INV_PRINTF("\r\n");
+#define SYSLOG_E(...) INV_PRINTF("\r\n");
+#define SYSLOG_W(...) INV_PRINTF("\r\n");
+#define SYSLOG_I(...) INV_PRINTF("\r\n");
+#define SYSLOG_D(...) INV_PRINTF("\r\n");
+#define SYSLOG_V(...) INV_PRINTF("\r\n");
+
+#endif // ! INV_USE_HITSIC_SYSLOG
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
@@ -212,11 +228,11 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
         int str = accel_bias_st[i] - accel_bias_regular[i];
         float Change_from_factory_trim = (float) (str - ft_a[i]) / ft_a[i];
         if (Change_from_factory_trim > 0.14 || Change_from_factory_trim < -0.14) {
-            INV_DEBUG("6050 accel[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
+            SYSLOG_D("6050 accel[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
             accel_result = 1;
         } else {
-            INV_INFO("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+            SYSLOG_I("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
         }
     }
@@ -225,11 +241,11 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
         int str = gyro_bias_st[i] - gyro_bias_regular[i];
         float Change_from_factory_trim = (float) (str - ft_g[i]) / ft_g[i];
         if (Change_from_factory_trim > 0.14 || Change_from_factory_trim < -0.14) {
-            INV_DEBUG("6050 gryo[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
+            SYSLOG_D("6050 gryo[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
             gyro_result = 1;
         } else {
-            INV_INFO("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+            SYSLOG_I("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
                       Change_from_factory_trim);
         }
     }
@@ -255,7 +271,7 @@ int MPU6050_SoftReset(inv_mpu6050_handle_t _this) {
     //等待复位成功
     do {
         IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-        INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x40", val);
+        SYSLOG_I("0x%x at PWR_MGMT_1,wait it get 0x40", val);
     } while (val != 0x40);
 
     //唤起睡眠

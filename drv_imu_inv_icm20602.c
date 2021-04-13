@@ -1,6 +1,23 @@
 ﻿#include "drv_imu_inv_icm20602.h"
 #if defined(INV_ICM20602_ENABLE) && (INV_ICM20602_ENABLE > 0U)
 
+#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
+
+#define SYSLOG_LVL (INVIMU_LOG_LVL)
+#define SYSLOG_TAG "INVIMU"
+#include<inc_syslog.h>
+
+#else // INV_USE_HITSIC_SYSLOG
+
+#define SYSLOG_A(...) INV_PRINTF("\r\n");
+#define SYSLOG_E(...) INV_PRINTF("\r\n");
+#define SYSLOG_W(...) INV_PRINTF("\r\n");
+#define SYSLOG_I(...) INV_PRINTF("\r\n");
+#define SYSLOG_D(...) INV_PRINTF("\r\n");
+#define SYSLOG_V(...) INV_PRINTF("\r\n");
+
+#endif // ! INV_USE_HITSIC_SYSLOG
+
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
 //#endif
@@ -249,10 +266,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
             if (st_shift_ratio[i] > DEF_ACCEL_ST_SHIFT_DELTA) {
                 //加速度计自检未通过
                 accel_result = 1;
-                INV_DEBUG("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
+                SYSLOG_D("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
-                INV_INFO("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
+                SYSLOG_I("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
                           DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
@@ -264,10 +281,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 || st_shift_cust[i] > DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000) {
                 //加速度计自检未通过
                 accel_result = 1;
-                INV_DEBUG("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                SYSLOG_D("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
-                INV_INFO("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                SYSLOG_I("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                           DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
@@ -293,10 +310,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
             if (st_shift_cust[i] < DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]) {
                 //陀螺仪自检没过
                 gyro_result = 1;
-                INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
-                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
@@ -304,10 +321,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
             if (st_shift_cust[i] < DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION) {
                 //陀螺仪自检没过
                 gyro_result = 1;
-                INV_DEBUG("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_INFO("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                           DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -320,10 +337,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 //陀螺仪自检没过
             {
                 gyro_result = 1;
-                INV_DEBUG("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                SYSLOG_D("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                INV_INFO("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                SYSLOG_I("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                           DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -350,7 +367,7 @@ int ICM20602_SoftReset(inv_icm20602_handle_t _this) {
     //等待复位成功
     do {
         IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-        INV_INFO("0x%x at PWR_MGMT_1,wait it get 0x41", val);
+        SYSLOG_I("0x%x at PWR_MGMT_1,wait it get 0x41", val);
     } while (val != 0x41);
 
     //唤起睡眠
@@ -372,7 +389,7 @@ int ICM20602_ReadSensorBlocking(inv_icm20602_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            INV_DEBUG("i2c read return code = %d", res);
+            SYSLOG_D("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20602_ACCEL_XOUT_H & 0x7fU);
@@ -381,7 +398,7 @@ int ICM20602_ReadSensorBlocking(inv_icm20602_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            INV_DEBUG("spi read return code = %d", res);
+            SYSLOG_D("spi read return code = %d", res);
         }
     }
     return res;
@@ -395,7 +412,7 @@ int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            INV_DEBUG("i2c read return code = %d", res);
+            SYSLOG_D("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20602_ACCEL_XOUT_H & 0x7fU);
@@ -404,7 +421,7 @@ int ICM20602_ReadSensorNonBlocking(inv_icm20602_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferNonBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            INV_DEBUG("spi read return code = %d", res);
+            SYSLOG_D("spi read return code = %d", res);
         }
     }
     return res;

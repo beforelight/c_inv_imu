@@ -3,6 +3,22 @@
 #include "drv_imu_inv_icm20948.h"
 #if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
 
+#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
+
+#define SYSLOG_LVL (INVIMU_LOG_LVL)
+#define SYSLOG_TAG "INVIMU"
+#include<inc_syslog.h>
+
+#else // INV_USE_HITSIC_SYSLOG
+
+#define SYSLOG_A(...) INV_PRINTF("\r\n");
+#define SYSLOG_E(...) INV_PRINTF("\r\n");
+#define SYSLOG_W(...) INV_PRINTF("\r\n");
+#define SYSLOG_I(...) INV_PRINTF("\r\n");
+#define SYSLOG_D(...) INV_PRINTF("\r\n");
+#define SYSLOG_V(...) INV_PRINTF("\r\n");
+
+#endif // ! INV_USE_HITSIC_SYSLOG
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
@@ -303,14 +319,14 @@ int ICM20948_SelfTest(inv_icm20948_handle_t _this) {
                 || st_shift_cust[i] > ((st_shift_prod[i] >> 1) + st_shift_prod[i])) {
                 //加速度计自检未通过
                 accel_result = 1;
-                INV_DEBUG("accel[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                SYSLOG_D("accel[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             } else {
-                INV_INFO("accel[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                SYSLOG_I("accel[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             }
         }
     } else {
         accel_result = 1;
-        INV_DEBUG("accel[%d] st fail,otp_value=0", i);
+        SYSLOG_D("accel[%d] st fail,otp_value=0", i);
     }
 
     //计算陀螺仪自检结果
@@ -333,14 +349,14 @@ int ICM20948_SelfTest(inv_icm20948_handle_t _this) {
             if (st_shift_cust[i] < (st_shift_prod[i] >> 1)) {
                 //陀螺仪自检未通过
                 accel_result = 1;
-                INV_DEBUG("gyro[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                SYSLOG_D("gyro[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             } else {
-                INV_INFO("gyro[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
+                SYSLOG_I("gyro[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             }
         }
     } else {
         accel_result = 1;
-        INV_DEBUG("gyro[%d] st fail,otp_value=0", i);
+        SYSLOG_D("gyro[%d] st fail,otp_value=0", i);
     }
 
     //恢复原来的配置
@@ -370,7 +386,7 @@ int ICM20948_ReadSensorBlocking(inv_icm20948_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            INV_DEBUG("i2c read return code = %d", res);
+            SYSLOG_D("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
@@ -379,7 +395,7 @@ int ICM20948_ReadSensorBlocking(inv_icm20948_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            INV_DEBUG("spi read return code = %d", res);
+            SYSLOG_D("spi read return code = %d", res);
         }
     }
     return res;
@@ -396,7 +412,7 @@ int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            INV_DEBUG("i2c read return code = %d", res);
+            SYSLOG_D("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) ICM20948_ACCEL_XOUT_H & 0x7fU);
@@ -405,7 +421,7 @@ int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferNonBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            INV_DEBUG("spi read return code = %d", res);
+            SYSLOG_D("spi read return code = %d", res);
         }
     }
     return res;
@@ -421,11 +437,11 @@ int ICM20948_Convert(inv_icm20948_handle_t _this, float *array) {
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
-//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            SYSLOG_I("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 8] & MPU9250_AK8963_OVERFLOW) {
-//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            SYSLOG_I("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     array[6] = magUnit * ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -444,11 +460,11 @@ int ICM20948_ConvertRaw(inv_icm20948_handle_t _this, int16_t *raw) {
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
-//            INV_INFO("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            SYSLOG_I("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 8] & MPU9250_AK8963_OVERFLOW) {
-//            INV_INFO("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            SYSLOG_I("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     raw[6] = ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -475,13 +491,13 @@ int ICM20948_SubI2cRead(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, 
         res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
-                INV_DEBUG("SubI2cRead time out");
+                SYSLOG_D("SubI2cRead time out");
                 return -2;
             }
             res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
         } while ((status & MPU9250_I2C_SLV4_DONE) == 0);
         if (status & MPU9250_I2C_SLV4_NACK) {
-            INV_DEBUG("SubI2cRead no ack");
+            SYSLOG_D("SubI2cRead no ack");
             return -3;
         }
         res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_SLV4_DI, val + index);
@@ -506,13 +522,13 @@ int ICM20948_SubI2cWrite(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg,
         res |= ICM20948_WriteReg(_this, (uint16_t) ICM20948_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
-                INV_DEBUG("SubI2cWrite time out");
+                SYSLOG_D("SubI2cWrite time out");
                 return -2;
             }
             res |= ICM20948_ReadReg(_this, (uint16_t) ICM20948_I2C_MST_STATUS, &status);
         } while ((status & MPU9250_I2C_SLV4_DONE) == 0);
         if (status & MPU9250_I2C_SLV4_NACK) {
-            INV_DEBUG("SubI2cWrite no ack");
+            SYSLOG_D("SubI2cWrite no ack");
             return -3;
         }
         index++;
