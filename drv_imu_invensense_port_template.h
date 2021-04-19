@@ -1,6 +1,11 @@
 #ifndef INV_IMU_INV_CONF_H
 #define INV_IMU_INV_CONF_H
 #if 1
+//延时
+//#define INV_DELAY(millisecond)
+#ifndef INV_DELAY
+#error "Please define 'INV_DELAY',👆👆👆👆"
+#endif
 //切换对模块的支持
 #define INV_MPU6050_ENABLE 1
 #define INV_MPU9250_ENABLE 1

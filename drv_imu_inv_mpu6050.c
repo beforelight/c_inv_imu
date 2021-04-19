@@ -263,25 +263,34 @@ int MPU6050_EnableDataReadyInt(inv_mpu6050_handle_t _this) {
     return IMU_ModifyReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_INT_ENABLE, 0x01, 0x01);
 }
 int MPU6050_SoftReset(inv_mpu6050_handle_t _this) {
-    if (!IMU_Detect((inv_imu_handle_t)_this)) { return -1; }
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
+    int times;
     uint8_t val;
     //复位
-    res |= IMU_WriteReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, 0x80);
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, 0x80);
     //等待复位成功
+    times = 100;//尝试100次
     do {
-        IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-        SYSLOG_I("0x%x at PWR_MGMT_1,wait it get 0x40", val);
-    } while (val != 0x40);
-
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
+    } while (val != 0x40 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x40", val);
+        return -1;
+    }
     //唤起睡眠
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_1, 0x0);
-
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, 0x0);
+    //等待唤起
+    times = 100;//尝试100次
+    do {
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
+    } while (val != 0x0 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x0", val);
+        return -1;
+    }
     return res;
 }
 int MPU6050_ReadSensorBlocking(inv_mpu6050_handle_t _this) {

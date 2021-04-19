@@ -267,10 +267,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 //加速度计自检未通过
                 accel_result = 1;
                 SYSLOG_D("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
-                          DEF_ACCEL_ST_SHIFT_DELTA);
+                         DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
                 SYSLOG_I("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
-                          DEF_ACCEL_ST_SHIFT_DELTA);
+                         DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
     } else {
@@ -282,10 +282,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 //加速度计自检未通过
                 accel_result = 1;
                 SYSLOG_D("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
-                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
+                         DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
                 SYSLOG_I("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
-                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
+                         DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
     }
@@ -311,10 +311,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 //陀螺仪自检没过
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
+                         DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
+                         DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
             /* Self Test Pass/Fail Criteria B */
@@ -322,10 +322,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
                 //陀螺仪自检没过
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
     }
@@ -338,10 +338,10 @@ int ICM20602_SelfTest(inv_icm20602_handle_t _this) {
             {
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
-                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
-                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
     }
@@ -361,23 +361,32 @@ int ICM20602_EnableDataReadyInt(inv_icm20602_handle_t _this) {
 int ICM20602_SoftReset(inv_icm20602_handle_t _this) {
     if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
+    int times;
     uint8_t val;
     //复位
     res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x80);
     //等待复位成功
+    times = 100;//尝试100次
     do {
-        IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-        SYSLOG_I("0x%x at PWR_MGMT_1,wait it get 0x41", val);
-    } while (val != 0x41);
-
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    } while (val != 0x41 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x41", val);
+        return -1;
+    }
     //唤起睡眠
-    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x1);
-
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, 0x1);
+    //等待唤起
+    times = 100;//尝试100次
+    do {
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20602_PWR_MGMT_1, &val);
+    } while (val != 0x1 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
+        return -1;
+    }
     return res;
 }
 int ICM20602_ReadSensorBlocking(inv_icm20602_handle_t _this) {

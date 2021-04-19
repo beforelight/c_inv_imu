@@ -372,7 +372,35 @@ int ICM20948_EnableDataReadyInt(inv_icm20948_handle_t _this) {
     return ICM20948_ModifyReg(_this, (uint16_t) ICM20948_INT_ENABLE_1, 0x01, 0x01);
 }
 int ICM20948_SoftReset(inv_icm20948_handle_t _this) {
-    return 0;
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
+    int res = 0;
+    int times;
+    uint8_t val;
+    //复位
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20948_PWR_MGMT_1, 0x80);
+    //等待复位成功
+    times = 100;//尝试100次
+    do {
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20948_PWR_MGMT_1, &val);
+    } while (val != 0x41 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x41", val);
+        return -1;
+    }
+    //唤起睡眠
+    res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20948_PWR_MGMT_1, 0x1);
+    //等待唤起
+    times = 100;//尝试100次
+    do {
+        INV_DELAY(5);
+        res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) ICM20948_PWR_MGMT_1, &val);
+    } while (val != 0x1 && res == 0 && --times);
+    if (times == 0) {
+        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
+        return -1;
+    }
+    return res;
 }
 int ICM20948_ReadSensorBlocking(inv_icm20948_handle_t _this) {
     if (_this->bank != 0) {
