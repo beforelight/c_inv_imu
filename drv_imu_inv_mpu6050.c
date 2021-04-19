@@ -169,9 +169,9 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
     }
 
     res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0b111 << 5));//打开陀螺仪自检
+    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0x7/*0x7/*0b111*/*/ << 5));//打开陀螺仪自检
     res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, val | (0b111 << 5));//打开加速度计自检
+    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, val | (0x7/*0b111*/ << 5));//打开加速度计自检
     times = 20;
     while (times--) { while (!IMU_DataReady((inv_imu_handle_t)_this)) {}}//丢弃前100个数据
     times = 20;
@@ -203,12 +203,12 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
     int g_st[3];
     int ft_a[3];
     int ft_g[3];
-    a_st[0] = ((0b111 & (regs[0] >> 5)) << 2) | (0b11 & (regs[3] >> 4));
-    a_st[1] = ((0b111 & (regs[1] >> 5)) << 2) | (0b11 & (regs[3] >> 2));
-    a_st[2] = ((0b111 & (regs[2] >> 5)) << 2) | (0b11 & (regs[3] >> 0));
-    g_st[0] = 0b11111 & regs[0];
-    g_st[1] = 0b11111 & regs[1];
-    g_st[2] = 0b11111 & regs[2];
+    a_st[0] = ((0x7/*0b111*/ & (regs[0] >> 5)) << 2) | (0x3/*0b11*/ & (regs[3] >> 4));
+    a_st[1] = ((0x7/*0b111*/ & (regs[1] >> 5)) << 2) | (0x3/*0b11*/ & (regs[3] >> 2));
+    a_st[2] = ((0x7/*0b111*/ & (regs[2] >> 5)) << 2) | (0x3/*0b11*/ & (regs[3] >> 0));
+    g_st[0] = 0x1F/*0b11111*/ & regs[0];
+    g_st[1] = 0x1F/*0b11111*/ & regs[1];
+    g_st[2] = 0x1F/*0b11111*/ & regs[2];
 
     a_st[0] &= (32 - 1);
     a_st[1] &= (32 - 1);

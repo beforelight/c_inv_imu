@@ -294,9 +294,9 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
     }
 
     res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_GYRO_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU9250_GYRO_CONFIG, val | (0b111 << 5));//打开陀螺仪自检
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU9250_GYRO_CONFIG, val | (0x7/*0b111*/ << 5));//打开陀螺仪自检
     res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_ACCEL_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU9250_ACCEL_CONFIG, val | (0b111 << 5));//打开加速度计自检
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU9250_ACCEL_CONFIG, val | (0x7/*0b111*/ << 5));//打开加速度计自检
     times = 20;
     while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 20;

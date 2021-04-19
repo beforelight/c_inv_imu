@@ -272,8 +272,8 @@ int ICM20948_SelfTest(inv_icm20948_handle_t _this) {
     }
 
     //打开自检输出
-    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_GYRO_CONFIG_2, 0b111 << 3, 0b111 << 3);
-    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_ACCEL_CONFIG_2, 0b111 << 3, 0b111 << 3);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_GYRO_CONFIG_2, 0x7/*0b111*/ << 3, 0x7/*0b111*/ << 3);
+    res |= ICM20948_ModifyReg(_this, (uint16_t) ICM20948_ACCEL_CONFIG_2, 0x7/*0b111*/ << 3, 0x7/*0b111*/ << 3);
 
     times = 50;
     while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
