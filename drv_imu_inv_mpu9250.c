@@ -1,6 +1,6 @@
 ﻿
 #include "drv_imu_inv_mpu9250.h"
-#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
+#if defined(INV_MPU9250_ENABLE) && (INV_MPU9250_ENABLE > 0U)
 
 #if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
 
@@ -22,18 +22,18 @@
 //extern "C"{
 //#endif
 
-const int DEF_ST_PRECISION = 1000;
-const int DEF_GYRO_CT_SHIFT_DELTA = 500;
-const int DEF_ACCEL_ST_SHIFT_DELTA = 500;
+#define DEF_ST_PRECISION  1000
+#define DEF_GYRO_CT_SHIFT_DELTA  500
+#define DEF_ACCEL_ST_SHIFT_DELTA  500
 /* Gyro Offset Max Value (dps) */
-const int DEF_GYRO_OFFSET_MAX = 20;
+#define DEF_GYRO_OFFSET_MAX  20
 /* Gyro Self Test Absolute Limits ST_AL (dps) */
-const int DEF_GYRO_ST_AL = 60;
+#define DEF_GYRO_ST_AL  60
 /* Accel Self Test Absolute Limits ST_AL (mg) */
-const int DEF_ACCEL_ST_AL_MIN = 225;
-const int DEF_ACCEL_ST_AL_MAX = 675;
+#define DEF_ACCEL_ST_AL_MIN  225
+#define DEF_ACCEL_ST_AL_MAX  675
 
-const uint16_t sSelfTestEquation[256] = {
+static const uint16_t sSelfTestEquation[256] = {
         2620, 2646, 2672, 2699, 2726, 2753, 2781, 2808,
         2837, 2865, 2894, 2923, 2952, 2981, 3011, 3041,
         3072, 3102, 3133, 3165, 3196, 3228, 3261, 3293,
@@ -69,21 +69,21 @@ const uint16_t sSelfTestEquation[256] = {
 };
 
 
-const unsigned int MPU9250_I2C_SLV4_EN = 0x80;
-const unsigned int MPU9250_I2C_SLV4_DONE = 0x40;
-const unsigned int MPU9250_I2C_SLV4_NACK = 0x10;
-const unsigned int MPU9250_AK8963_I2C_ADDR = 0x0C;
-const unsigned int ICM20948_AK09916_I2C_ADDR = 0x0C;
-const unsigned int MPU9250_AK8963_POWER_DOWN = 0x10;
-const unsigned int MPU9250_AK8963_FUSE_ROM_ACCESS = 0x1F;
+#define MPU9250_I2C_SLV4_EN  0x80
+#define MPU9250_I2C_SLV4_DONE  0x40
+#define MPU9250_I2C_SLV4_NACK  0x10
+#define MPU9250_AK8963_I2C_ADDR  0x0C
+#define ICM20948_AK09916_I2C_ADDR  0x0C;
+#define MPU9250_AK8963_POWER_DOWN  0x10
+#define MPU9250_AK8963_FUSE_ROM_ACCESS  0x1F
 //     const unsigned int MPU9250_AK8963_SINGLE_MEASUREMENT = 0x11;
-const unsigned int MPU9250_AK8963_CONTINUOUS_MEASUREMENT = 0x16; //MODE 2
-const unsigned int MPU9250_AK8963_DATA_READY = (0x01);
-const unsigned int MPU9250_AK8963_DATA_OVERRUN = (0x02);
+#define MPU9250_AK8963_CONTINUOUS_MEASUREMENT 0x16 //MODE 2
+#define MPU9250_AK8963_DATA_READY  (0x01)
+#define MPU9250_AK8963_DATA_OVERRUN  (0x02)
 // const unsigned int MPU9250_AK8963_OVERFLOW = (0x80);
-const unsigned int MPU9250_AK8963_OVERFLOW = (0x08);
+#define MPU9250_AK8963_OVERFLOW  (0x08)
 //     const unsigned int MPU9250_AK8963_DATA_ERROR = (0x40);
-const unsigned int MPU9250_AK8963_CNTL2_SRST = 0x01;
+#define MPU9250_AK8963_CNTL2_SRST  0x01
 
 
 const inv_imu_vector_table_t mpu9250_VectorTable =
@@ -101,9 +101,9 @@ const inv_imu_vector_table_t mpu9250_VectorTable =
                 .ConvertRaw =(void *) MPU9250_ConvertRaw,
                 .ConvertTemp =(void *) MPU9250_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void*) MPU9250_Destruct
+                .Destruct = (void *) MPU9250_Destruct
         };
-const float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
+#define magUnit 0.15f//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     inv_mpu9250_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu9250_t));
     inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
@@ -111,7 +111,7 @@ inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     rtv->parents = *p2parent;
     _IMU_Destruct(p2parent);
 
-   rtv->parents.vtable = &mpu9250_VectorTable;
+    rtv->parents.vtable = &mpu9250_VectorTable;
     rtv->buf = rtv->rxbuf + 1;
     return rtv;
 }
@@ -346,10 +346,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 //加速度计自检未通过
                 accel_result = 1;
                 SYSLOG_D("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
-                          DEF_ACCEL_ST_SHIFT_DELTA);
+                         DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
                 SYSLOG_I("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
-                          DEF_ACCEL_ST_SHIFT_DELTA);
+                         DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
     } else {
@@ -361,10 +361,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 //加速度计自检未通过
                 accel_result = 1;
                 SYSLOG_D("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
-                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
+                         DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
                 SYSLOG_I("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
-                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
+                         DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
     }
@@ -390,10 +390,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 //陀螺仪自检没过
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
+                         DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
+                         DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
             /* Self Test Pass/Fail Criteria B */
@@ -401,10 +401,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 //陀螺仪自检没过
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
-                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
     }
@@ -417,10 +417,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
             {
                 gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
-                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
                 SYSLOG_I("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
-                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
+                         DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
     }

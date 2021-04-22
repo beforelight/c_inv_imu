@@ -1,7 +1,7 @@
 ﻿
 
 #include "drv_imu_inv_icm20948.h"
-#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
+#if defined(INV_ICM20948_ENABLE) && (INV_ICM20948_ENABLE > 0U)
 
 #if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
 
@@ -24,17 +24,17 @@
 //extern "C"{
 //#endif
 
-float magUnit = 0.15f;;//固定量程4900uT 0.15µT/LSB
+#define magUnit  0.15f//固定量程4900uT 0.15µT/LSB
 
-const unsigned int MPU9250_I2C_SLV4_EN = 0x80;
-const unsigned int MPU9250_I2C_SLV4_DONE = 0x40;
-const unsigned int MPU9250_I2C_SLV4_NACK = 0x10;
-const unsigned int ICM20948_AK09916_I2C_ADDR = 0x0C;
-const unsigned int MPU9250_AK8963_DATA_READY = (0x01);
-const unsigned int MPU9250_AK8963_DATA_OVERRUN = (0x02);
+#define MPU9250_I2C_SLV4_EN  0x80
+#define MPU9250_I2C_SLV4_DONE  0x40
+#define MPU9250_I2C_SLV4_NACK  0x10
+#define ICM20948_AK09916_I2C_ADDR  0x0C
+#define MPU9250_AK8963_DATA_READY  (0x01)
+#define MPU9250_AK8963_DATA_OVERRUN  (0x02)
 // const unsigned int MPU9250_AK8963_OVERFLOW = (0x80);
-const unsigned int MPU9250_AK8963_OVERFLOW = (0x08);
-const uint16_t sSelfTestEquation[256] = {
+#define MPU9250_AK8963_OVERFLOW  (0x08)
+static const uint16_t sSelfTestEquation[256] = {
         2620, 2646, 2672, 2699, 2726, 2753, 2781, 2808,
         2837, 2865, 2894, 2923, 2952, 2981, 3011, 3041,
         3072, 3102, 3133, 3165, 3196, 3228, 3261, 3293,
@@ -85,7 +85,7 @@ const inv_imu_vector_table_t icm20948_VectorTable =
                 .ConvertRaw =(void *) ICM20948_ConvertRaw,
                 .ConvertTemp =(void *) ICM20948_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void*) ICM20948_Destruct
+                .Destruct = (void *) ICM20948_Destruct
         };
 
 

@@ -22,18 +22,18 @@
 //extern "C"{
 //#endif
 
-const int DEF_ST_PRECISION = 1000;
-const int DEF_GYRO_CT_SHIFT_DELTA = 500;
-const int DEF_ACCEL_ST_SHIFT_DELTA = 500;
+#define DEF_ST_PRECISION  1000
+#define DEF_GYRO_CT_SHIFT_DELTA  500
+#define DEF_ACCEL_ST_SHIFT_DELTA  500
 /* Gyro Offset Max Value (dps) */
-const int DEF_GYRO_OFFSET_MAX = 20;
+#define DEF_GYRO_OFFSET_MAX  20
 /* Gyro Self Test Absolute Limits ST_AL (dps) */
-const int DEF_GYRO_ST_AL = 60;
+#define DEF_GYRO_ST_AL  60
 /* Accel Self Test Absolute Limits ST_AL (mg) */
-const int DEF_ACCEL_ST_AL_MIN = 225;
-const int DEF_ACCEL_ST_AL_MAX = 675;
+#define DEF_ACCEL_ST_AL_MIN  225
+#define DEF_ACCEL_ST_AL_MAX  675
 
-const uint16_t sSelfTestEquation[256] = {
+static const uint16_t sSelfTestEquation[256] = {
         2620, 2646, 2672, 2699, 2726, 2753, 2781, 2808,
         2837, 2865, 2894, 2923, 2952, 2981, 3011, 3041,
         3072, 3102, 3133, 3165, 3196, 3228, 3261, 3293,

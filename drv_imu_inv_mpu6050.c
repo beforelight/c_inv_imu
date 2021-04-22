@@ -169,7 +169,7 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
     }
 
     res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0x7/*0x7/*0b111*/*/ << 5));//打开陀螺仪自检
+    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0x7/*0b111*/ << 5));//打开陀螺仪自检
     res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, &val);
     res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, val | (0x7/*0b111*/ << 5));//打开加速度计自检
     times = 20;

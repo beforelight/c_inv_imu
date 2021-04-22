@@ -81,7 +81,7 @@ typedef struct __inv_imu_vector_table {
 } inv_imu_vector_table_t;
 
 typedef struct __inv_imu {
-    inv_imu_vector_table_t *vtable;
+    const inv_imu_vector_table_t *vtable;
     union {
         inv_i2c_t i2c;
         inv_spi_t spi;
@@ -117,7 +117,7 @@ static inline int IMU_ConvertTemp(inv_imu_handle_t _this, float *temp) { return 
 static inline bool IMU_IsOpen(inv_imu_handle_t _this) { return _this->vtable->IsOpen(_this); }
 static inline void IMU_Destruct(inv_imu_handle_t _this) { return _this->vtable->Destruct(_this); }
 
-const int IMU_SlaveAddressAutoDetect = 0;
+#define IMU_SlaveAddressAutoDetect  0
 void _IMU_Destruct(inv_imu_handle_t _this);
 inv_imu_handle_t _IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_imu_handle_t _IMU_ConstructSPI(inv_spi_t _spi);
