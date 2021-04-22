@@ -1,26 +1,7 @@
 ﻿#include "drv_imu_inv_icm20602.h"
+#include "__drv_imu_syslog.h"
 #if defined(INV_ICM20602_ENABLE) && (INV_ICM20602_ENABLE > 0U)
 
-#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
-
-#define SYSLOG_LVL (INVIMU_LOG_LVL)
-#define SYSLOG_TAG "INVIMU"
-#include<inc_syslog.h>
-
-#else // INV_USE_HITSIC_SYSLOG
-
-#define SYSLOG_A(...) INV_PRINTF("\r\n");
-#define SYSLOG_E(...) INV_PRINTF("\r\n");
-#define SYSLOG_W(...) INV_PRINTF("\r\n");
-#define SYSLOG_I(...) INV_PRINTF("\r\n");
-#define SYSLOG_D(...) INV_PRINTF("\r\n");
-#define SYSLOG_V(...) INV_PRINTF("\r\n");
-
-#endif // ! INV_USE_HITSIC_SYSLOG
-
-//#if defined(__cplusplus) || defined(c_plusplus)
-//extern "C"{
-//#endif
 
 #define DEF_ST_PRECISION  1000
 #define DEF_GYRO_CT_SHIFT_DELTA  500
@@ -459,6 +440,8 @@ int ICM20602_ConvertTemp(inv_icm20602_handle_t _this, float *temp) {
     if (temp) { *temp = (float) ((int16_t) (_this->buf[6] << 8) | _this->buf[7]) / 326.8f + 25.0f; }
     return 0;
 }
+void ICM20602_Destruct(inv_icm20602_handle_t _this) { _IMU_Destruct((void *) _this); }
+const char *ICM20602_Report(inv_icm20602_handle_t _this) { return " icm20602"; }
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //}

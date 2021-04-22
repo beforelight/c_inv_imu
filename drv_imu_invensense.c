@@ -1,25 +1,5 @@
 ﻿#include "drv_imu_invensense.h"
-
-#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
-
-#define SYSLOG_LVL (INVIMU_LOG_LVL)
-#define SYSLOG_TAG "INVIMU"
-#include<inc_syslog.h>
-
-#else // INV_USE_HITSIC_SYSLOG
-
-#define SYSLOG_A(...) INV_PRINTF("\r\n");
-#define SYSLOG_E(...) INV_PRINTF("\r\n");
-#define SYSLOG_W(...) INV_PRINTF("\r\n");
-#define SYSLOG_I(...) INV_PRINTF("\r\n");
-#define SYSLOG_D(...) INV_PRINTF("\r\n");
-#define SYSLOG_V(...) INV_PRINTF("\r\n");
-
-#endif // ! INV_USE_HITSIC_SYSLOG
-
-//#if defined(__cplusplus) || defined(c_plusplus)
-//extern "C"{
-//#endif
+#include "__drv_imu_syslog.h"
 
 inv_imu_handle_t _IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     inv_imu_handle_t rtv = INV_MALLOC(sizeof(inv_imu_t));
@@ -324,7 +304,7 @@ inv_imu_config_t IMU_ConfigDefault() {
 
     return result;
 }
-void _IMU_Destruct(inv_imu_handle_t _this) { INV_FREE(_this); }
+void _IMU_Destruct(inv_imu_handle_t _this) { INV_FREE(_this);_this = NULL; }
 bool _IMU_IsOpen(inv_imu_handle_t _this) { return _this->isOpen; }
 
 

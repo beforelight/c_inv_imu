@@ -15,16 +15,18 @@ typedef struct __inv_icm20602 {
     uint8_t rxbuf[15];
 } inv_icm20602_t, *inv_icm20602_handle_t;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
-inline void ICM20602_Destruct(inv_icm20602_handle_t _this) { _IMU_Destruct((void *) _this); }
+void ICM20602_Destruct(inv_icm20602_handle_t _this);
 inv_icm20602_handle_t ICM20602_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_icm20602_handle_t ICM20602_ConstructSPI(inv_spi_t _spi);
-
 
 int ICM20602_Init(inv_icm20602_handle_t _this, inv_imu_config_t _cfg);
 bool ICM20602_Detect(inv_icm20602_handle_t _this);
 int ICM20602_SelfTest(inv_icm20602_handle_t _this);
-inline const char *ICM20602_Report(inv_icm20602_handle_t _this) { return " icm20602"; }
+const char *ICM20602_Report(inv_icm20602_handle_t _this);
 bool ICM20602_DataReady(inv_icm20602_handle_t _this);
 int ICM20602_EnableDataReadyInt(inv_icm20602_handle_t _this);
 int ICM20602_SoftReset(inv_icm20602_handle_t _this);
@@ -34,6 +36,9 @@ int ICM20602_Convert(inv_icm20602_handle_t _this, float array[9]);
 int ICM20602_ConvertRaw(inv_icm20602_handle_t _this, int16_t raw[9]);
 int ICM20602_ConvertTemp(inv_icm20602_handle_t _this, float *temp);
 
+#if defined(__cplusplus)
+}
+#endif
 
 enum ICM20602_RegMap {
     ICM20602_XG_OFFS_TC_H = 0x4,            // READ/ WRITE

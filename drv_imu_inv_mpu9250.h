@@ -21,8 +21,11 @@ typedef struct __inv_mpu9250 {
     float ak8963Asa[3];
 } inv_mpu9250_t, *inv_mpu9250_handle_t;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
-inline void MPU9250_Destruct(inv_mpu9250_handle_t _this) { _IMU_Destruct((void *) _this); }
+void MPU9250_Destruct(inv_mpu9250_handle_t _this);
 inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_mpu9250_handle_t MPU9250_ConstructSPI(inv_spi_t _spi);
 
@@ -30,7 +33,7 @@ inv_mpu9250_handle_t MPU9250_ConstructSPI(inv_spi_t _spi);
 int MPU9250_Init(inv_mpu9250_handle_t _this, inv_imu_config_t _cfg);
 bool MPU9250_Detect(inv_mpu9250_handle_t _this);
 int MPU9250_SelfTest(inv_mpu9250_handle_t _this);
-inline const char *MPU9250_Report(inv_mpu9250_handle_t _this) { return "mpu9250"; }
+const char *MPU9250_Report(inv_mpu9250_handle_t _this);
 bool MPU9250_DataReady(inv_mpu9250_handle_t _this);
 int MPU9250_EnableDataReadyInt(inv_mpu9250_handle_t _this);
 int MPU9250_SoftReset(inv_mpu9250_handle_t _this);
@@ -44,6 +47,9 @@ int MPU9250_ConvertTemp(inv_mpu9250_handle_t _this, float *temp);
 int MPU9250_SubI2cRead(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);
 int MPU9250_SubI2cWrite(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len);
 
+#if defined(__cplusplus)
+}
+#endif
 
 enum MPU9250_RegMap {
     MPU9250_SELF_TEST_X_GYRO = 0x0,//R/W

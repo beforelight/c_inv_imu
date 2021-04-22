@@ -1,28 +1,7 @@
-﻿
-
-#include "drv_imu_inv_icm20948.h"
+﻿#include "drv_imu_inv_icm20948.h"
+#include "__drv_imu_syslog.h"
 #if defined(INV_ICM20948_ENABLE) && (INV_ICM20948_ENABLE > 0U)
 
-#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
-
-#define SYSLOG_LVL (INVIMU_LOG_LVL)
-#define SYSLOG_TAG "INVIMU"
-#include<inc_syslog.h>
-
-#else // INV_USE_HITSIC_SYSLOG
-
-#define SYSLOG_A(...) INV_PRINTF("\r\n");
-#define SYSLOG_E(...) INV_PRINTF("\r\n");
-#define SYSLOG_W(...) INV_PRINTF("\r\n");
-#define SYSLOG_I(...) INV_PRINTF("\r\n");
-#define SYSLOG_D(...) INV_PRINTF("\r\n");
-#define SYSLOG_V(...) INV_PRINTF("\r\n");
-
-#endif // ! INV_USE_HITSIC_SYSLOG
-
-//#if defined(__cplusplus) || defined(c_plusplus)
-//extern "C"{
-//#endif
 
 #define magUnit  0.15f//固定量程4900uT 0.15µT/LSB
 
@@ -591,6 +570,8 @@ int ICM20948_SwitchBank(inv_icm20948_handle_t _this, int _bank) {
     _this->bank = _bank;
     return IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) ICM20948_REG_BANK_SEL, _bank << 4);
 }
+void ICM20948_Destruct(inv_icm20948_handle_t _this) { _IMU_Destruct((void *) _this); }
+const char *ICM20948_Report(inv_icm20948_handle_t _this) { return " icm20948"; }
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //}

@@ -11,19 +11,20 @@ typedef struct __inv_icm20600 {
     inv_icm20602_t parents;
 } inv_icm20600_t, *inv_icm20600_handle_t;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
-inline void ICM20600_Destruct(inv_icm20600_handle_t _this) { ICM20602_Destruct((void *) _this); }
+void ICM20600_Destruct(inv_icm20600_handle_t _this);
 inv_icm20600_handle_t ICM20600_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_icm20600_handle_t ICM20600_ConstructSPI(inv_spi_t _spi);
 
-
-
 bool ICM20600_Detect(inv_icm20602_handle_t _this);
-inline const char *ICM20600_Report(inv_icm20602_handle_t _this) { return " icm20600"; }
+const char *ICM20600_Report(inv_icm20602_handle_t _this);
 
-//#if defined(__cplusplus) || defined(c_plusplus)
-//}
-//#endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif //INV_XXX_ENABLE
 

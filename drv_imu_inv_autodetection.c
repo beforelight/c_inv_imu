@@ -23,58 +23,47 @@
 #endif // ! INV_USE_HITSIC_SYSLOG
 
 
-
-#define IMU_AutoConstructI2CItem(model) {rtv = model##_ConstructI2C(_i2c,_addr);\
-assert(rtv);\
-if(IMU_Detect(rtv)){\
-return rtv;\
-}else{\
-IMU_Destruct(rtv);\
-};}
+static void *(*const ConstructI2C_table[])(inv_i2c_t, uint8_t) ={
+        (void *(*)(inv_i2c_t, uint8_t)) MPU6050_ConstructI2C,
+        (void *(*)(inv_i2c_t, uint8_t)) MPU9250_ConstructI2C,
+        (void *(*)(inv_i2c_t, uint8_t)) ICM20602_ConstructI2C,
+        (void *(*)(inv_i2c_t, uint8_t)) ICM20600_ConstructI2C,
+        (void *(*)(inv_i2c_t, uint8_t)) ICM20948_ConstructI2C
+};
 
 inv_imu_handle_t IMU_AutoConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     void *rtv = NULL;
-#if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
-    IMU_AutoConstructI2CItem(MPU6050);
-#endif
-#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
-    IMU_AutoConstructI2CItem(MPU9250);
-#endif
-#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
-    IMU_AutoConstructI2CItem(ICM20602);
-#endif
-#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
-    IMU_AutoConstructI2CItem(ICM20600);
-#endif
-#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
-    IMU_AutoConstructI2CItem(ICM20948);
-#endif
+    for (int i = 0; i < sizeof(ConstructI2C_table) / sizeof(void *(*)(inv_i2c_t, uint8_t)); ++i) {
+        rtv = ConstructI2C_table[i](_i2c, _addr);
+        assert(rtv);
+        if (IMU_Detect(rtv)) {
+            return rtv;
+        } else {
+            IMU_Destruct(rtv);
+            rtv = NULL;
+        };
+    }
     return rtv;
 }
 
-#define IMU_AutoConstructSPIItem(model) {rtv = model##_ConstructSPI(_spi);\
-assert(rtv);\
-if(IMU_Detect(rtv)){\
-return rtv;\
-}else{\
-IMU_Destruct(rtv);\
-};}
-
-
+static void *(*const ConstructSPI_table[])(inv_spi_t) ={
+        (void *(*)(inv_spi_t)) MPU9250_ConstructSPI,
+        (void *(*)(inv_spi_t)) ICM20602_ConstructSPI,
+        (void *(*)(inv_spi_t)) ICM20600_ConstructSPI,
+        (void *(*)(inv_spi_t)) ICM20948_ConstructSPI
+};
 
 inv_imu_handle_t IMU_AutoConstructSPI(inv_spi_t _spi) {
     void *rtv = NULL;
-#if defined(INV_MPU9250_ENABLE)&&(INV_MPU9250_ENABLE>0U)
-    IMU_AutoConstructSPIItem(MPU9250);
-#endif
-#if defined(INV_ICM20602_ENABLE)&&(INV_ICM20602_ENABLE>0U)
-    IMU_AutoConstructSPIItem(ICM20602);
-#endif
-#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
-    IMU_AutoConstructSPIItem(ICM20600);
-#endif
-#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
-    IMU_AutoConstructSPIItem(ICM20948);
-#endif
+    for (int i = 0; i < sizeof(ConstructSPI_table) / sizeof(void *(*)(inv_spi_t)); ++i) {
+        rtv = ConstructSPI_table[i](_spi);
+        assert(rtv);
+        if (IMU_Detect(rtv)) {
+            return rtv;
+        } else {
+            IMU_Destruct(rtv);
+            rtv = NULL;
+        };
+    }
     return rtv;
 }

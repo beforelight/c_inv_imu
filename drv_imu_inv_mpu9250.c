@@ -1,26 +1,7 @@
-﻿
-#include "drv_imu_inv_mpu9250.h"
+﻿#include "drv_imu_inv_mpu9250.h"
+#include "__drv_imu_syslog.h"
 #if defined(INV_MPU9250_ENABLE) && (INV_MPU9250_ENABLE > 0U)
 
-#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
-
-#define SYSLOG_LVL (INVIMU_LOG_LVL)
-#define SYSLOG_TAG "INVIMU"
-#include<inc_syslog.h>
-
-#else // INV_USE_HITSIC_SYSLOG
-
-#define SYSLOG_A(...) INV_PRINTF("\r\n");
-#define SYSLOG_E(...) INV_PRINTF("\r\n");
-#define SYSLOG_W(...) INV_PRINTF("\r\n");
-#define SYSLOG_I(...) INV_PRINTF("\r\n");
-#define SYSLOG_D(...) INV_PRINTF("\r\n");
-#define SYSLOG_V(...) INV_PRINTF("\r\n");
-
-#endif // ! INV_USE_HITSIC_SYSLOG
-//#if defined(__cplusplus) || defined(c_plusplus)
-//extern "C"{
-//#endif
 
 #define DEF_ST_PRECISION  1000
 #define DEF_GYRO_CT_SHIFT_DELTA  500
@@ -615,6 +596,8 @@ int MPU9250_SubI2cWrite(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, c
     }
     return res;
 }
+void MPU9250_Destruct(inv_mpu9250_handle_t _this) { _IMU_Destruct((void *) _this); }
+const char *MPU9250_Report(inv_mpu9250_handle_t _this) { return "mpu9250"; }
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //}

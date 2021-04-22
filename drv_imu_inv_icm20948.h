@@ -19,15 +19,18 @@ typedef struct __inv_icm20948 {
 } inv_icm20948_t, *inv_icm20948_handle_t;
 
 
-inline void ICM20948_Destruct(inv_icm20948_handle_t _this) { _IMU_Destruct((void *) _this); }
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+void ICM20948_Destruct(inv_icm20948_handle_t _this);
 inv_icm20948_handle_t ICM20948_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_icm20948_handle_t ICM20948_ConstructSPI(inv_spi_t _spi);
-
 
 int ICM20948_Init(inv_icm20948_handle_t _this, inv_imu_config_t _cfg);
 bool ICM20948_Detect(inv_icm20948_handle_t _this);
 int ICM20948_SelfTest(inv_icm20948_handle_t _this);
-inline const char *ICM20948_Report(inv_icm20948_handle_t _this) { return " icm20948"; }
+const char *ICM20948_Report(inv_icm20948_handle_t _this);
 bool ICM20948_DataReady(inv_icm20948_handle_t _this);
 int ICM20948_EnableDataReadyInt(inv_icm20948_handle_t _this);
 int ICM20948_SoftReset(inv_icm20948_handle_t _this);
@@ -46,6 +49,9 @@ int ICM20948_ReadReg(inv_icm20948_handle_t _this, uint16_t reg, uint8_t *val);
 int ICM20948_ModifyReg(inv_icm20948_handle_t _this, uint16_t reg, const uint8_t val, const uint8_t mask);
 int ICM20948_SwitchBank(inv_icm20948_handle_t _this, int _bank);
 
+#if defined(__cplusplus)
+}
+#endif
 
 enum ICM20948_RegMap {
     ICM20948_WHO_AM_I = 0x0,//0      R

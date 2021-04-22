@@ -3,9 +3,7 @@
 #if 1
 //延时
 //#define INV_DELAY(millisecond)
-#ifndef INV_DELAY
-#error "Please define 'INV_DELAY',👆👆👆👆"
-#endif
+
 //切换对模块的支持
 #define INV_MPU6050_ENABLE 1
 #define INV_MPU9250_ENABLE 1
@@ -15,30 +13,16 @@
 
 //设置使用什么堆内存管理
 #include<stdlib.h>
-
 #define INV_MALLOC malloc
 #define INV_FREE free
 
-//设置log接口，注意接口函数是带换行符的printf
-
-#define INV_USE_HITSIC_SYSLOG (0U)
-
-#if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
-
-#define INVIMU_LOG_LVL (3U)
-
-#else // INV_USE_HITSIC_SYSLOG
-
+//设置log接口的printf
 #include <stdio.h>
-#define INV_PRINTF(...) printf(__VA_ARGS__);printf("\r\n")
-
-#endif // ! INV_USE_HITSIC_SYSLOG
-
+#define INV_PRINTF printf
 #endif // ! 1
 
 
 #include<stdint.h>
-
 typedef enum __inv_i2c_direction {
     inv_i2c_direction_Write = 0U, /*!< Master transmit. */
     inv_i2c_direction_Read = 1U  /*!< Master receive. */

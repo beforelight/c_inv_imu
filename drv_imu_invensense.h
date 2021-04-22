@@ -11,6 +11,10 @@
 #include<float.h>
 #include<assert.h>
 
+#define IMU_SlaveAddressAutoDetect  0
+#ifndef INV_DELAY
+#error "Please define 'INV_DELAY',in 'drv_imu_invensense_port.h'"
+#endif
 enum mpu_accel_fs_t {
     MPU_FS_2G = 2,
     MPU_FS_4G = 4,
@@ -61,7 +65,6 @@ typedef struct __imu_config {
     enum mpu_gyro_unit_t gyroUnit;
     enum mpu_accel_unit_t accelUnit;
 } inv_imu_config_t;
-inv_imu_config_t IMU_ConfigDefault();
 
 typedef struct __inv_imu_vector_table {
     int (*Init)(void *_this, inv_imu_config_t _cfg);
@@ -96,6 +99,9 @@ typedef struct __inv_imu {
     inv_imu_config_t cfg;
 } inv_imu_t, *inv_imu_handle_t;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 static inline int IMU_Init(inv_imu_handle_t _this, inv_imu_config_t _cfg) {
     assert(_this);
@@ -117,7 +123,7 @@ static inline int IMU_ConvertTemp(inv_imu_handle_t _this, float *temp) { return 
 static inline bool IMU_IsOpen(inv_imu_handle_t _this) { return _this->vtable->IsOpen(_this); }
 static inline void IMU_Destruct(inv_imu_handle_t _this) { return _this->vtable->Destruct(_this); }
 
-#define IMU_SlaveAddressAutoDetect  0
+inv_imu_config_t IMU_ConfigDefault();
 void _IMU_Destruct(inv_imu_handle_t _this);
 inv_imu_handle_t _IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_imu_handle_t _IMU_ConstructSPI(inv_spi_t _spi);
@@ -129,6 +135,9 @@ bool _IMU_IsOpen(inv_imu_handle_t _this);
 inv_imu_handle_t IMU_AutoConstructI2C(inv_i2c_t _i2c, uint8_t _addr);
 inv_imu_handle_t IMU_AutoConstructSPI(inv_spi_t _spi);
 
+#ifdef __cplusplus
+}
+#endif
 
 struct _inv_weak_map_int_t {
     const float *key;
