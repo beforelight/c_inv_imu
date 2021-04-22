@@ -1,5 +1,6 @@
 #ifndef C_INV_IMU____DRV_IMU_SYSLOG_H
 #define C_INV_IMU____DRV_IMU_SYSLOG_H
+#include <drv_imu_invensense_port.h>
 
 #if (defined(INV_USE_HITSIC_SYSLOG) && (INV_USE_HITSIC_SYSLOG > 0))
 
