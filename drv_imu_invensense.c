@@ -100,11 +100,6 @@ int IMU_ModifyReg(inv_imu_handle_t _this, uint8_t reg, uint8_t val, uint8_t mask
     int res = 0;
     res |= IMU_ReadReg(_this, reg, &regVal);
     res |= IMU_WriteRegVerified(_this, reg, (regVal & (~mask)) | (val & mask));
-    res |= IMU_ReadReg(_this, reg, &regVal);
-    if ((regVal & mask) != (val & mask)) {
-        SYSLOG_D("imu rw error");
-        res |= -1;
-    }
     return res;
 }
 
