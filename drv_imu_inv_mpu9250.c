@@ -82,7 +82,8 @@ const inv_imu_vector_table_t mpu9250_VectorTable =
                 .ConvertRaw =(void *) MPU9250_ConvertRaw,
                 .ConvertTemp =(void *) MPU9250_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void *) MPU9250_Destruct
+                .Destruct = (void *) MPU9250_Destruct,
+                .Dump = (void *) _IMU_Dump
         };
 #define magUnit 0.15f//固定量程4900uT 0.15µT/LSB
 inv_mpu9250_handle_t MPU9250_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {

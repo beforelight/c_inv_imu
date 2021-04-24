@@ -1,7 +1,7 @@
 ﻿#ifndef INV_IMU_INV_ICM20948_H
 #define INV_IMU_INV_ICM20948_H
 #include "drv_imu_invensense.h"
-#if defined(INV_ICM20948_ENABLE)&&(INV_ICM20948_ENABLE>0U)
+#if defined(INV_ICM20948_ENABLE) && (INV_ICM20948_ENABLE > 0U)
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //extern "C"{
@@ -39,6 +39,7 @@ int ICM20948_ReadSensorNonBlocking(inv_icm20948_handle_t _this);
 int ICM20948_Convert(inv_icm20948_handle_t _this, float array[9]);
 int ICM20948_ConvertRaw(inv_icm20948_handle_t _this, int16_t raw[9]);
 int ICM20948_ConvertTemp(inv_icm20948_handle_t _this, float *temp);
+void ICM20948_Dump(inv_icm20948_handle_t _this, int(*_printf_)(const char *, ...));
 
 
 int ICM20948_SubI2cRead(inv_icm20948_handle_t _this, uint8_t addr, uint8_t reg, uint8_t *val, unsigned int len);

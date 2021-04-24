@@ -64,7 +64,8 @@ const inv_imu_vector_table_t icm20948_VectorTable =
                 .ConvertRaw =(void *) ICM20948_ConvertRaw,
                 .ConvertTemp =(void *) ICM20948_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void *) ICM20948_Destruct
+                .Destruct = (void *) ICM20948_Destruct,
+                .Dump = (void *) ICM20948_Dump
         };
 
 
@@ -575,6 +576,13 @@ int ICM20948_SwitchBank(inv_icm20948_handle_t _this, int _bank) {
 }
 void ICM20948_Destruct(inv_icm20948_handle_t _this) { _IMU_Destruct((void *) _this); }
 const char *ICM20948_Report(inv_icm20948_handle_t _this) { return " icm20948"; }
+void ICM20948_Dump(inv_icm20948_handle_t _this, int (*_printf_)(const char *, ...)) {
+    for (int i = 0; i < 4; ++i) {
+        ICM20948_SwitchBank(_this, i);
+        _printf_("\r\nBank=%d\r\n", i);
+        _IMU_Dump(_this, _printf_);
+    }
+}
 
 //#if defined(__cplusplus) || defined(c_plusplus)
 //}

@@ -102,7 +102,27 @@ int IMU_ModifyReg(inv_imu_handle_t _this, uint8_t reg, uint8_t val, uint8_t mask
     res |= IMU_WriteRegVerified(_this, reg, (regVal & (~mask)) | (val & mask));
     return res;
 }
-
+void _IMU_Dump(inv_imu_handle_t _this, int (*_printf_)(const char *, ...)) {
+    uint8_t val;
+    int res = 0;
+    _printf_("\r\n");
+    _printf_("Hex");//第-1行
+    for (int k = 0; k < 16; ++k) {
+        _printf_(" *%x", k);//列首
+    }
+    _printf_("\r\n");//第-1行
+    for (int j = 0; j < 8; ++j) {
+        _printf_("%x*:", j);//行首
+        for (int k = 0; k < 16; ++k) {
+            res |= IMU_ReadReg(_this, (j << 4) | k, &val);
+            _printf_(" %2.2x", val);
+        }
+        _printf_("\r\n");//第j行
+    }
+    if (res != 0) {
+        SYSLOG_E("IMU_ReadReg return code(%d),maybe dump some rubbish", res);
+    }
+}
 
 const float mpu_accel_fs_map_key[] = {
         MPU_FS_2G,

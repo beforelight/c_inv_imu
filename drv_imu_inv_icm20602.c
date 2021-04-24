@@ -64,7 +64,8 @@ const inv_imu_vector_table_t icm20602_VectorTable =
                 .ConvertRaw =(void *) ICM20602_ConvertRaw,
                 .ConvertTemp =(void *) ICM20602_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void *) ICM20602_Destruct
+                .Destruct = (void *) ICM20602_Destruct,
+                .Dump = (void *) _IMU_Dump
         };
 
 
@@ -139,7 +140,7 @@ int ICM20602_Init(inv_icm20602_handle_t _this, inv_imu_config_t _cfg) {
 
     if (res == 0) {
         _this->parents.isOpen = true;
-        SYSLOG_D("Init with the config↓👇，%s is ready!",IMU_Report((inv_imu_handle_t) _this));
+        SYSLOG_D("Init with the config↓👇，%s is ready!", IMU_Report((inv_imu_handle_t) _this));
         SYSLOG_D(IMU_ConfigFormat2String(_this->parents.cfg));
     }
     return res;
