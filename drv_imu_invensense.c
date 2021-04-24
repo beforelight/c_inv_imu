@@ -13,6 +13,7 @@ inv_imu_handle_t _IMU_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
     } else {
         rtv->addrAutoDetect = false;
     }
+    rtv->cfg = IMU_ConfigDefault();
     return rtv;
 }
 inv_imu_handle_t _IMU_ConstructSPI(inv_spi_t _spi) {
@@ -20,6 +21,7 @@ inv_imu_handle_t _IMU_ConstructSPI(inv_spi_t _spi) {
     memset(rtv, 0, sizeof(inv_imu_t));
     rtv->isSPI = true;
     rtv->spi = _spi;
+    rtv->cfg = IMU_ConfigDefault();
     return rtv;
 }
 

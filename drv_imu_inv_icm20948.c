@@ -327,14 +327,14 @@ int ICM20948_SelfTest(inv_icm20948_handle_t _this) {
             st_shift_cust[i] = gyro_bias_st[i] - gyro_bias_regular[i];
             if (st_shift_cust[i] < (st_shift_prod[i] >> 1)) {
                 //陀螺仪自检未通过
-                accel_result = 1;
+                gyro_result = 1;
                 SYSLOG_D("gyro[%d] st fail,result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             } else {
                 SYSLOG_I("gyro[%d] st result = %f,ref:0.5<result<1.5", i, (float) st_shift_cust[i] / st_shift_prod[i]);
             }
         }
     } else {
-        accel_result = 1;
+        gyro_result = 1;
         SYSLOG_D("gyro[%d] st fail,otp_value=0", i);
     }
 

@@ -3,6 +3,9 @@
 #if 1
 //延时
 //#define INV_DELAY(millisecond)
+#ifndef INV_DELAY
+#error "Please define 'INV_DELAY',👆👆👆👆"
+#endif
 
 //切换对模块的支持
 #define INV_MPU6050_ENABLE 1
@@ -35,8 +38,6 @@ typedef struct __inv_i2c_transfer {
     void *volatile data;        /*!< A transfer buffer. */
     volatile uint32_t dataSize;          /*!< A transfer size. */
     inv_i2c_direction_t direction; /*!< A transfer direction, read or write. */
-    /*******************************************************/
-    //you like
 } inv_i2c_transfer_t;
 
 typedef struct __inv_i2c {
@@ -48,8 +49,6 @@ typedef struct __inv_spi_transfer {
     uint8_t *volatile txData;          /*!< Send buffer. */
     uint8_t *volatile rxData;          /*!< Receive buffer. */
     volatile uint32_t dataSize; /*!< Transfer bytes. */
-    /*******************************************************/
-    //you like
 } inv_spi_transfer_t;
 
 typedef struct __inv_spi {
