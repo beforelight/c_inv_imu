@@ -580,7 +580,7 @@ void ICM20948_Dump(inv_icm20948_handle_t _this, int (*_printf_)(const char *, ..
     for (int i = 0; i < 4; ++i) {
         ICM20948_SwitchBank(_this, i);
         _printf_("\r\nBank=%d\r\n", i);
-        _IMU_Dump(_this, _printf_);
+        _IMU_Dump((inv_imu_handle_t) _this, _printf_);
     }
 }
 
