@@ -1,4 +1,5 @@
-﻿#ifndef C_INV_IMU_INV_IMU_H
+﻿//version:5.0(24 4月 2021 09:46:23)
+#ifndef C_INV_IMU_INV_IMU_H
 #define C_INV_IMU_INV_IMU_H
 #ifdef _C_INV_IMU_DEV_
 #include "drv_imu_invensense_port_template.h"
