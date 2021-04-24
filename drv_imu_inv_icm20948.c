@@ -355,6 +355,9 @@ int ICM20948_SoftReset(inv_icm20948_handle_t _this) {
     int res = 0;
     int times;
     uint8_t val;
+    //先选择bank0
+    ICM20948_SwitchBank(_this, 0);
+
     //复位
     res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) ICM20948_PWR_MGMT_1, 0x80);
     //等待复位成功
@@ -438,9 +441,9 @@ int ICM20948_Convert(inv_icm20948_handle_t _this, float *array) {
     array[0] = _this->accelUnit * ((int16_t) ((buf[0] << 8) | buf[1]));
     array[1] = _this->accelUnit * ((int16_t) ((buf[2] << 8) | buf[3]));
     array[2] = _this->accelUnit * ((int16_t) ((buf[4] << 8) | buf[5]));
-    array[3] = _this->gyroUnit * ((int16_t) ((buf[8] << 8) | buf[9]));
-    array[4] = _this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
-    array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
+    array[3] = _this->gyroUnit * ((int16_t) ((buf[6] << 8) | buf[7]));
+    array[4] = _this->gyroUnit * ((int16_t) ((buf[8] << 8) | buf[9]));
+    array[5] = _this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
@@ -461,9 +464,9 @@ int ICM20948_ConvertRaw(inv_icm20948_handle_t _this, int16_t *raw) {
     raw[0] = ((int16_t) ((buf[0] << 8) | buf[1]));
     raw[1] = ((int16_t) ((buf[2] << 8) | buf[3]));
     raw[2] = ((int16_t) ((buf[4] << 8) | buf[5]));
-    raw[3] = ((int16_t) ((buf[8] << 8) | buf[9]));
-    raw[4] = ((int16_t) ((buf[10] << 8) | buf[11]));
-    raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
+    raw[3] = ((int16_t) ((buf[6] << 8) | buf[7]));
+    raw[4] = ((int16_t) ((buf[8] << 8) | buf[9]));
+    raw[5] = ((int16_t) ((buf[10] << 8) | buf[11]));
 
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
 //        if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY)) {
