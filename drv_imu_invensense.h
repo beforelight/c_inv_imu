@@ -65,6 +65,9 @@ typedef struct __imu_config {
     enum mpu_gyro_unit_t gyroUnit;
     enum mpu_accel_unit_t accelUnit;
 } inv_imu_config_t;
+#define IMU_ConfigFormat2String(cfg) "Acc/Gyro:FS = +-%dG/%dDPS,BW = %DHz,UnitFlag = %d/%d", \
+cfg.accelFullScale,cfg.gyroFullScale,cfg.accelBandwidth,cfg.gyroBandwidth,cfg.accelUnit,cfg.gyroUnit
+
 
 typedef struct __inv_imu_vector_table {
     int (*Init)(void *_this, inv_imu_config_t _cfg);

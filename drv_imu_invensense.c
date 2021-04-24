@@ -35,7 +35,7 @@ int IMU_WriteReg(inv_imu_handle_t _this, uint8_t reg, uint8_t val) {
         _this->i2cTransfer.direction = inv_i2c_direction_Write;
         res = _this->i2c.masterTransferBlocking(&_this->i2cTransfer);
         if (res != 0) {
-            SYSLOG_D("i2c write return code = %d", res);
+            SYSLOG_E("i2c write return code = %d", res);
         }
     } else {
         uint8_t txb[2];
@@ -47,7 +47,7 @@ int IMU_WriteReg(inv_imu_handle_t _this, uint8_t reg, uint8_t val) {
         _this->spiTransfer.txData = txb;
         res = _this->spi.masterTransferBlocking(&_this->spiTransfer);
         if (res != 0) {
-            SYSLOG_D("spi write return code = %d", res);
+            SYSLOG_E("spi write return code = %d", res);
         }
     }
     return res;
@@ -61,7 +61,7 @@ int IMU_WriteRegVerified(inv_imu_handle_t _this, uint8_t reg, uint8_t val) {
         res |= IMU_WriteReg(_this, reg, val);
         res |= IMU_ReadReg(_this, reg, &regVal);
         if (res == 0 && val != regVal) {
-            SYSLOG_D("imu  rw error");
+            SYSLOG_E("imu  rw error");
             res |= -1;
         }
     }
@@ -76,7 +76,7 @@ int IMU_ReadReg(inv_imu_handle_t _this, uint8_t reg, uint8_t *val) {
         _this->i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->i2c.masterTransferBlocking(&_this->i2cTransfer);
         if (res != 0) {
-            SYSLOG_D("i2c read return code = %d", res);
+            SYSLOG_E("i2c read return code = %d", res);
         }
     } else {
         uint8_t txb[2];
@@ -87,7 +87,7 @@ int IMU_ReadReg(inv_imu_handle_t _this, uint8_t reg, uint8_t *val) {
         _this->spiTransfer.txData = txb;
         res = _this->spi.masterTransferBlocking(&_this->spiTransfer);
         if (res != 0) {
-            SYSLOG_D("spi read return code = %d", res);
+            SYSLOG_E("spi read return code = %d", res);
         } else {
             *val = rxb[1];
         }

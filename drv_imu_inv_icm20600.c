@@ -1,6 +1,6 @@
 ﻿#include "drv_imu_inv_icm20600.h"
 #include "__drv_imu_syslog.h"
-#if defined(INV_ICM20600_ENABLE)&&(INV_ICM20600_ENABLE>0U)
+#if defined(INV_ICM20600_ENABLE) && (INV_ICM20600_ENABLE > 0U)
 
 const inv_imu_vector_table_t icm20600_VectorTable =
         {
@@ -17,7 +17,7 @@ const inv_imu_vector_table_t icm20600_VectorTable =
                 .ConvertRaw =(void *) ICM20602_ConvertRaw,
                 .ConvertTemp =(void *) ICM20602_ConvertTemp,
                 .IsOpen =(void *) _IMU_IsOpen,
-                .Destruct = (void*) ICM20600_Destruct,
+                .Destruct = (void *) ICM20600_Destruct,
         };
 
 inv_icm20600_handle_t ICM20600_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {

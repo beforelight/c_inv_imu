@@ -215,10 +215,10 @@ int MPU9250_Init(inv_mpu9250_handle_t _this, inv_imu_config_t _cfg) {
 
     if (res == 0) {
         _this->parents.isOpen = true;
-        return 0;
-    } else {
-        return res;
+        SYSLOG_D("Init with the config↓👇，%s is ready!", IMU_Report((inv_imu_handle_t) _this));
+        SYSLOG_D(IMU_ConfigFormat2String(_this->parents.cfg));
     }
+    return res;
 }
 bool MPU9250_Detect(inv_mpu9250_handle_t _this) {
     uint8_t val = 0;
@@ -326,10 +326,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
             if (st_shift_ratio[i] > DEF_ACCEL_ST_SHIFT_DELTA) {
                 //加速度计自检未通过
                 accel_result = 1;
-                SYSLOG_D("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
+                SYSLOG_W("accel[%d] st fail,result = %d,it demands less than %d", i, st_shift_ratio[i],
                          DEF_ACCEL_ST_SHIFT_DELTA);
             } else {
-                SYSLOG_I("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
+                SYSLOG_D("accel[%d] st result = %d,it demands less than %d", i, st_shift_ratio[i],
                          DEF_ACCEL_ST_SHIFT_DELTA);
             }
         }
@@ -341,10 +341,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 || st_shift_cust[i] > DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000) {
                 //加速度计自检未通过
                 accel_result = 1;
-                SYSLOG_D("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                SYSLOG_W("accel[%d] st fail,result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             } else {
-                SYSLOG_I("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
+                SYSLOG_D("accel[%d] st result = %d,it demands <%d && >%d", i, st_shift_cust[i],
                          DEF_ACCEL_ST_AL_MAX * (32768 / 2000) * 1000, DEF_ACCEL_ST_AL_MIN * (32768 / 2000) * 1000);
             }
         }
@@ -370,10 +370,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
             if (st_shift_cust[i] < DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]) {
                 //陀螺仪自检没过
                 gyro_result = 1;
-                SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_W("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             } else {
-                SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_D("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                          DEF_GYRO_CT_SHIFT_DELTA * st_shift_prod[i]);
             }
         } else {
@@ -381,10 +381,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
             if (st_shift_cust[i] < DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION) {
                 //陀螺仪自检没过
                 gyro_result = 1;
-                SYSLOG_D("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_W("gyro[%d] st fail,result = %d,it demands greater than %d", i, st_shift_cust[i],
                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                SYSLOG_I("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
+                SYSLOG_D("gyro[%d] st result = %d,it demands greater than %d", i, st_shift_cust[i],
                          DEF_GYRO_ST_AL * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -397,10 +397,10 @@ int MPU9250_SelfTest(inv_mpu9250_handle_t _this) {
                 //陀螺仪自检没过
             {
                 gyro_result = 1;
-                SYSLOG_D("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                SYSLOG_W("gyro[%d] st fail,result = %d,ift demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             } else {
-                SYSLOG_I("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
+                SYSLOG_D("gyro[%d] st result = %d,it demands less than %d", i, (int) abs(gyro_bias_regular[i]),
                          DEF_GYRO_OFFSET_MAX * (32768 / 250) * DEF_ST_PRECISION);
             }
         }
@@ -432,7 +432,7 @@ int MPU9250_SoftReset(inv_mpu9250_handle_t _this) {
         res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_PWR_MGMT_1, &val);
     } while (val != 0x1 && res == 0 && --times);
     if (times == 0) {
-        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
+        SYSLOG_E("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
         return -1;
     }
     //唤起睡眠
@@ -444,7 +444,7 @@ int MPU9250_SoftReset(inv_mpu9250_handle_t _this) {
         res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_PWR_MGMT_1, &val);
     } while (val != 0x1 && res == 0 && --times);
     if (times == 0) {
-        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
+        SYSLOG_E("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x1", val);
         return -1;
     }
     return res;
@@ -458,7 +458,7 @@ int MPU9250_ReadSensorBlocking(inv_mpu9250_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            SYSLOG_D("i2c read return code = %d", res);
+            SYSLOG_E("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) MPU9250_ACCEL_XOUT_H & 0x7fU);
@@ -467,7 +467,7 @@ int MPU9250_ReadSensorBlocking(inv_mpu9250_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            SYSLOG_D("spi read return code = %d", res);
+            SYSLOG_E("spi read return code = %d", res);
         }
     }
     return res;
@@ -481,7 +481,7 @@ int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle_t _this) {
         _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
         res = _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
         if (res != 0) {
-            SYSLOG_D("i2c read return code = %d", res);
+            SYSLOG_E("i2c read return code = %d", res);
         }
     } else {
         _this->txbuf[0] = (1U << 7U) | ((uint8_t) MPU9250_ACCEL_XOUT_H & 0x7fU);
@@ -490,7 +490,7 @@ int MPU9250_ReadSensorNonBlocking(inv_mpu9250_handle_t _this) {
         _this->parents.spiTransfer.txData = _this->txbuf;
         res = _this->parents.spi.masterTransferNonBlocking(&_this->parents.spiTransfer);
         if (res != 0) {
-            SYSLOG_D("spi read return code = %d", res);
+            SYSLOG_E("spi read return code = %d", res);
         }
     }
     return res;
@@ -504,11 +504,11 @@ int MPU9250_Convert(inv_mpu9250_handle_t _this, float *array) {
     array[4] = _this->gyroUnit * ((int16_t) ((buf[10] << 8) | buf[11]));
     array[5] = _this->gyroUnit * ((int16_t) ((buf[12] << 8) | buf[13]));
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
-//            SYSLOG_I("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            SYSLOG_V("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 7] & MPU9250_AK8963_OVERFLOW) {
-//            SYSLOG_I("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            SYSLOG_V("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     array[6] = magUnit * _this->ak8963Asa[0] * ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -525,11 +525,11 @@ int MPU9250_ConvertRaw(inv_mpu9250_handle_t _this, int16_t *raw) {
     raw[4] = ((int16_t) ((buf[10] << 8) | buf[11]));
     raw[5] = ((int16_t) ((buf[12] << 8) | buf[13]));
     if (!(buf[14 + 0] & MPU9250_AK8963_DATA_READY) || (buf[14 + 0] & MPU9250_AK8963_DATA_OVERRUN)) {
-//            SYSLOG_I("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
+//            SYSLOG_V("0x%x at buf[14 + 0]", (int) buf[14 + 0]);
         return -1;
     }
     if (buf[14 + 7] & MPU9250_AK8963_OVERFLOW) {
-//            SYSLOG_I("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
+//            SYSLOG_V("0x%x at buf[14 + 7]", (int) buf[14 + 7]);
         return -1;
     }
     raw[6] = ((int16_t) (buf[14 + 2] << 8) | buf[14 + 1]);
@@ -556,7 +556,7 @@ int MPU9250_SubI2cRead(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, ui
         res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
-                SYSLOG_D("MPU9250_SubI2cRead time out");
+                SYSLOG_E("MPU9250_SubI2cRead time out");
                 return -2;
             }
             res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_I2C_MST_STATUS, &status);
@@ -583,13 +583,13 @@ int MPU9250_SubI2cWrite(inv_mpu9250_handle_t _this, uint8_t addr, uint8_t reg, c
         res |= IMU_WriteReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_I2C_SLV4_CTRL, tmp);
         do {
             if (timeout++ > 5000) {
-                SYSLOG_D("MPU9250_SubI2cWrite time out");
+                SYSLOG_E("MPU9250_SubI2cWrite time out");
                 return -2;
             }
             res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU9250_I2C_MST_STATUS, &status);
         } while ((status & MPU9250_I2C_SLV4_DONE) == 0);
         if (status & MPU9250_I2C_SLV4_NACK) {
-            SYSLOG_D("MPU9250_SubI2cWrite no ack");
+            SYSLOG_E("MPU9250_SubI2cWrite no ack");
             return -3;
         }
         index++;

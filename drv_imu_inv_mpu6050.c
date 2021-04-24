@@ -1,6 +1,6 @@
 ﻿#include "drv_imu_inv_mpu6050.h"
 #include "__drv_imu_syslog.h"
-#if defined(INV_MPU6050_ENABLE)&&(INV_MPU6050_ENABLE>0U)
+#if defined(INV_MPU6050_ENABLE) && (INV_MPU6050_ENABLE > 0U)
 
 const uint16_t accelSelfTestEquation[32] = {
         1347, 1393, 1440, 1488, 1538, 1590, 1644, 1699,
@@ -31,11 +31,11 @@ const inv_imu_vector_table_t mpu6050_VectorTable = {
         .ConvertRaw =(void *) MPU6050_ConvertRaw,
         .ConvertTemp =(void *) MPU6050_ConvertTemp,
         .IsOpen =(void *) _IMU_IsOpen,
-        .Destruct = (void*) MPU6050_Destruct
+        .Destruct = (void *) MPU6050_Destruct
 };
 
 inv_mpu6050_handle_t MPU6050_ConstructI2C(inv_i2c_t _i2c, uint8_t _addr) {
-    inv_mpu6050_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu6050_t ));
+    inv_mpu6050_handle_t rtv = (void *) INV_MALLOC(sizeof(inv_mpu6050_t));
     inv_imu_handle_t p2parent = _IMU_ConstructI2C(_i2c, _addr);
     memset(rtv, 0, sizeof(inv_mpu6050_t));
     rtv->parents = *p2parent;
@@ -57,19 +57,19 @@ int MPU6050_Init(inv_mpu6050_handle_t _this, inv_imu_config_t _cfg) {
     float unit_from;
 
 
-    if (!IMU_Detect((inv_imu_handle_t)_this)) { return -1; }
+    if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
     //软复位
-    res |= IMU_SoftReset((inv_imu_handle_t)_this);
+    res |= IMU_SoftReset((inv_imu_handle_t) _this);
 
     //打开所有传感器
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_PWR_MGMT_2, 0);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_2, 0);
 
     //1khz采样率
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_SMPLRT_DIV, 0);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_SMPLRT_DIV, 0);
 
     //配置陀螺仪lpf
     _InvGetMapVal(MPU6050_GBW_MAP, _this->parents.cfg.gyroBandwidth, bw);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_CONFIG, bw);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_CONFIG, bw);
 
     //配置陀螺仪量程和单位
     _InvGetMapVal(mpu_gyro_unit_dps_map, _this->parents.cfg.gyroFullScale, unit);
@@ -77,7 +77,7 @@ int MPU6050_Init(inv_mpu6050_handle_t _this, inv_imu_config_t _cfg) {
     _this->gyroUnit = unit * unit_from;
 
     _InvGetMapVal(mpu_gyro_fs_map, _this->parents.cfg.gyroFullScale, fs);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, fs << 3u);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_GYRO_CONFIG, fs << 3u);
 
     //配置加速度计量程和单位
     _InvGetMapVal(mpu_accel_unit_G_map, _this->parents.cfg.accelFullScale, unit);
@@ -85,40 +85,42 @@ int MPU6050_Init(inv_mpu6050_handle_t _this, inv_imu_config_t _cfg) {
     _this->accelUnit = unit * unit_from;
 
     _InvGetMapVal(mpu_accel_fs_map, _this->parents.cfg.accelFullScale, fs);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, fs << 3u);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_ACCEL_CONFIG, fs << 3u);
 
     //开启数据更新中断
-    res |= IMU_EnableDataReadyInt((inv_imu_handle_t)_this);
+    res |= IMU_EnableDataReadyInt((inv_imu_handle_t) _this);
 
     if (res == 0) {
         _this->parents.isOpen = true;
+        SYSLOG_D("Init with the config↓👇，%s is ready!", IMU_Report((inv_imu_handle_t) _this));
+        SYSLOG_D(IMU_ConfigFormat2String(_this->parents.cfg));
     }
     return res;
 }
 bool MPU6050_Detect(inv_mpu6050_handle_t _this) {
     uint8_t val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x68; };
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_WHO_AM_I, &val);
     if (0x68 == val) {
         return true;
     }
     val = 0;
     if (_this->parents.addrAutoDetect) { _this->parents.i2cTransfer.slaveAddress = 0x69; };
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_WHO_AM_I, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_WHO_AM_I, &val);
     if (0x68 == val) {
         return true;
     }
     return false;
 }
 int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
-    if (!IMU_IsOpen((inv_imu_handle_t)_this)) { return -1; }
+    if (!IMU_IsOpen((inv_imu_handle_t) _this)) { return -1; }
     int res = 0;
     inv_imu_config_t backup_cfg = _this->parents.cfg;
     inv_imu_config_t st_cfg = IMU_ConfigDefault();
     st_cfg.gyroFullScale = MPU_FS_250dps;
     st_cfg.accelFullScale = MPU_FS_8G;
-    if (0 != IMU_Init((inv_imu_handle_t)_this, st_cfg)) {
-        IMU_Init((inv_imu_handle_t)_this, backup_cfg);
+    if (0 != IMU_Init((inv_imu_handle_t) _this, st_cfg)) {
+        IMU_Init((inv_imu_handle_t) _this, backup_cfg);
         return -1;
     }
     int32_t gyro_bias_st[3], gyro_bias_regular[3];
@@ -136,29 +138,29 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
 
     int times;
     times = 20;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle_t)_this)) {}}//丢弃前20个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前20个数据
     times = 20;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle_t)_this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle_t)_this);
-        IMU_ConvertRaw((inv_imu_handle_t)_this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_regular[i] += gbuf[i];
             accel_bias_regular[i] += abuf[i];
         }
     }
 
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0x7/*0b111*/ << 5));//打开陀螺仪自检
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, &val);
-    res |= IMU_WriteRegVerified((inv_imu_handle_t)_this, (uint8_t) MPU6050_ACCEL_CONFIG, val | (0x7/*0b111*/ << 5));//打开加速度计自检
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_GYRO_CONFIG, &val);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_GYRO_CONFIG, val | (0x7/*0b111*/ << 5));//打开陀螺仪自检
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_ACCEL_CONFIG, &val);
+    res |= IMU_WriteRegVerified((inv_imu_handle_t) _this, (uint8_t) MPU6050_ACCEL_CONFIG, val | (0x7/*0b111*/ << 5));//打开加速度计自检
     times = 20;
-    while (times--) { while (!IMU_DataReady((inv_imu_handle_t)_this)) {}}//丢弃前100个数据
+    while (times--) { while (!IMU_DataReady((inv_imu_handle_t) _this)) {}}//丢弃前100个数据
     times = 20;
     while (times--) {
-        while (!IMU_DataReady((inv_imu_handle_t)_this)) {}
-        res |= IMU_ReadSensorBlocking((inv_imu_handle_t)_this);
-        IMU_ConvertRaw((inv_imu_handle_t)_this, abuf);
+        while (!IMU_DataReady((inv_imu_handle_t) _this)) {}
+        res |= IMU_ReadSensorBlocking((inv_imu_handle_t) _this);
+        IMU_ConvertRaw((inv_imu_handle_t) _this, abuf);
         for (int i = 0; i < 3; ++i) {
             gyro_bias_st[i] += gbuf[i];
             accel_bias_st[i] += abuf[i];
@@ -175,10 +177,10 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
     //开始计算自检结果
     uint8_t regs[4];
 
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_SELF_TEST_X, regs);
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_SELF_TEST_Y, regs + 1);
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_SELF_TEST_Z, regs + 2);
-    res |= IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_SELF_TEST_A, regs + 3);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_SELF_TEST_X, regs);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_SELF_TEST_Y, regs + 1);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_SELF_TEST_Z, regs + 2);
+    res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_SELF_TEST_A, regs + 3);
     int a_st[3];
     int g_st[3];
     int ft_a[3];
@@ -208,12 +210,12 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
         int str = accel_bias_st[i] - accel_bias_regular[i];
         float Change_from_factory_trim = (float) (str - ft_a[i]) / ft_a[i];
         if (Change_from_factory_trim > 0.14 || Change_from_factory_trim < -0.14) {
-            SYSLOG_D("6050 accel[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
-                      Change_from_factory_trim);
+            SYSLOG_W("6050 accel[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
+                     Change_from_factory_trim);
             accel_result = 1;
         } else {
-            SYSLOG_I("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
-                      Change_from_factory_trim);
+            SYSLOG_D("6050 accel[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+                     Change_from_factory_trim);
         }
     }
 
@@ -221,26 +223,26 @@ int MPU6050_SelfTest(inv_mpu6050_handle_t _this) {
         int str = gyro_bias_st[i] - gyro_bias_regular[i];
         float Change_from_factory_trim = (float) (str - ft_g[i]) / ft_g[i];
         if (Change_from_factory_trim > 0.14 || Change_from_factory_trim < -0.14) {
-            SYSLOG_D("6050 gryo[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
-                      Change_from_factory_trim);
+            SYSLOG_W("6050 gryo[%d] self test fail,result = %f,it demands >-0.14 && <0.14", i,
+                     Change_from_factory_trim);
             gyro_result = 1;
         } else {
-            SYSLOG_I("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
-                      Change_from_factory_trim);
+            SYSLOG_D("6050 gryo[%d] self test result = %f,it demands >-0.14 && <0.14", i,
+                     Change_from_factory_trim);
         }
     }
 
     //恢复原来的配置
-    res |= IMU_Init((inv_imu_handle_t)_this, backup_cfg);
+    res |= IMU_Init((inv_imu_handle_t) _this, backup_cfg);
     return (gyro_result << 1) | accel_result | res;
 }
 bool MPU6050_DataReady(inv_mpu6050_handle_t _this) {
     uint8_t val = 0;
-    IMU_ReadReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_INT_STATUS, &val);
+    IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_INT_STATUS, &val);
     return (val & 0x01) == 0x01;
 }
 int MPU6050_EnableDataReadyInt(inv_mpu6050_handle_t _this) {
-    return IMU_ModifyReg((inv_imu_handle_t)_this, (uint8_t) MPU6050_INT_ENABLE, 0x01, 0x01);
+    return IMU_ModifyReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_INT_ENABLE, 0x01, 0x01);
 }
 int MPU6050_SoftReset(inv_mpu6050_handle_t _this) {
     if (!IMU_Detect((inv_imu_handle_t) _this)) { return -1; }
@@ -256,7 +258,7 @@ int MPU6050_SoftReset(inv_mpu6050_handle_t _this) {
         res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
     } while (val != 0x40 && res == 0 && --times);
     if (times == 0) {
-        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x40", val);
+        SYSLOG_E("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x40", val);
         return -1;
     }
     //唤起睡眠
@@ -268,24 +270,33 @@ int MPU6050_SoftReset(inv_mpu6050_handle_t _this) {
         res |= IMU_ReadReg((inv_imu_handle_t) _this, (uint8_t) MPU6050_PWR_MGMT_1, &val);
     } while (val != 0x0 && res == 0 && --times);
     if (times == 0) {
-        SYSLOG_I("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x0", val);
+        SYSLOG_E("Time out!! 0x%x at PWR_MGMT_1,when waiting it get 0x0", val);
         return -1;
     }
     return res;
 }
 int MPU6050_ReadSensorBlocking(inv_mpu6050_handle_t _this) {
+    int res;
     _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
     _this->parents.i2cTransfer.subAddress = (uint8_t) MPU6050_ACCEL_XOUT_H;
     _this->parents.i2cTransfer.data = _this->buf;
     _this->parents.i2cTransfer.dataSize = 14;
-    return _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
+    res = _this->parents.i2c.masterTransferBlocking(&_this->parents.i2cTransfer);
+    if (res != 0) {
+        SYSLOG_E("i2c read return code = %d", res);
+    }
+    return res;
 }
 int MPU6050_ReadSensorNonBlocking(inv_mpu6050_handle_t _this) {
     _this->parents.i2cTransfer.direction = inv_i2c_direction_Read;
     _this->parents.i2cTransfer.subAddress = (uint8_t) MPU6050_ACCEL_XOUT_H;
     _this->parents.i2cTransfer.data = _this->buf;
     _this->parents.i2cTransfer.dataSize = 14;
-    return _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
+    int res = _this->parents.i2c.masterTransferNonBlocking(&_this->parents.i2cTransfer);
+    if (res != 0) {
+        SYSLOG_E("i2c read return code = %d", res);
+    }
+    return res;
 }
 int MPU6050_Convert(inv_mpu6050_handle_t _this, float *array) {
     uint8_t *buf = _this->buf;
@@ -309,7 +320,7 @@ int MPU6050_ConvertRaw(inv_mpu6050_handle_t _this, int16_t *raw) {
 }
 int MPU6050_ConvertTemp(inv_mpu6050_handle_t _this, float *temp) {
     if (temp) {
-        *temp = (float) ((int16_t) ((((int16_t)_this->buf[6] << 8) | _this->buf[7]) - 521)) / 340.0f + 35;
+        *temp = (float) ((int16_t) ((((int16_t) _this->buf[6] << 8) | _this->buf[7]) - 521)) / 340.0f + 35;
     }
     return 0;
 }
