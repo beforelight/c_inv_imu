@@ -126,8 +126,8 @@ static inline int IMU_Convert(inv_imu_handle_t _this, float array[9]) { return _
 static inline int IMU_ConvertRaw(inv_imu_handle_t _this, int16_t raw[9]) { return _this->vtable->ConvertRaw(_this, raw); }
 static inline int IMU_ConvertTemp(inv_imu_handle_t _this, float *temp) { return _this->vtable->ConvertTemp(_this, temp); }
 static inline bool IMU_IsOpen(inv_imu_handle_t _this) { return _this->vtable->IsOpen(_this); }
-static inline void IMU_Destruct(inv_imu_handle_t _this) { return _this->vtable->Destruct(_this); }
-static inline void IMU_Dump(inv_imu_handle_t _this, int(*_printf_)(const char *, ...)) { return _this->vtable->Dump(_this, _printf_); }
+static inline void IMU_Destruct(inv_imu_handle_t _this) { _this->vtable->Destruct(_this); }
+static inline void IMU_Dump(inv_imu_handle_t _this, int(*_printf_)(const char *, ...)) { _this->vtable->Dump(_this, _printf_); }
 
 inv_imu_config_t IMU_ConfigDefault();
 void _IMU_Destruct(inv_imu_handle_t _this);
